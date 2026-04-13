@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>FootyGround Pro - Premium Sports Facility Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+</head>
+<body>
+    <div class="app">
+        <!-- Modern Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <div class="sport-icon" style="font-size: 2rem;">⚽</div>
+                    <div>
+                        <h1>FootyGround <span style="font-size: 0.8rem;">Pro</span></h1>
+                        <p>Premium Sports Facility Management</p>
+                    </div>
+                </div>
+                <div class="nav-links" id="navLinks">
+                    <button class="nav-btn" onclick="showSection('schedule')">
+                        <span>📅</span> Schedule Match
+                    </button>
+                    <button class="nav-btn" onclick="showSection('myMatches')">
+                        <span>⚽</span> My Matches
+                    </button>
+                    <button class="nav-btn" onclick="showSection('allMatches')">
+                        <span>🏆</span> All Matches
+                    </button>
+                    <button class="nav-btn" onclick="showSection('network')">
+                        <span>🤝</span> Find Opponents
+                    </button>
+                    <button class="nav-btn" onclick="showSection('profile')">
+                        <span>👥</span> Team Profile
+                    </button>
+                    <button class="nav-btn admin-only" id="adminBtn" style="display:none;" onclick="showSection('admin')">
+                        <span>👑</span> Admin Panel
+                    </button>
+                </div>
+                <div id="authButtons" class="auth-buttons">
+                    <!-- Dynamic auth buttons -->
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content with Animation -->
+        <main class="main-content">
+            <div id="contentContainer">
+                <!-- Dynamic content with fade animation -->
+            </div>
+        </main>
+
+        <!-- Modern Footer -->
+        <footer class="footer">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; max-width: 1200px; margin: 0 auto;">
+                <div>
+                    <p style="font-weight: 600; margin-bottom: 0.5rem;">⚽ FootyGround Pro</p>
+                    <p style="font-size: 0.85rem;">© 2024 Premium Sports Facility Management</p>
+                </div>
+                <div style="display: flex; gap: 2rem;">
+                    <div>
+                        <p style="font-size: 0.8rem;">⚽ Football | 🏏 Cricket</p>
+                        <p style="font-size: 0.8rem;">🏀 Basketball | 🎾 Tennis</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.8rem;">🏸 Badminton | 🏐 Volleyball</p>
+                        <p style="font-size: 0.8rem;">💳 Secure Payments | ✅ Instant Booking</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePaymentModal()">&times;</span>
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <div class="sport-icon" style="font-size: 3rem;">💳</div>
+                <h2 class="gradient-text">Complete Payment</h2>
+            </div>
+            <div id="paymentElement"></div>
+            <button id="submitPayment" class="btn-primary" style="width: 100%; margin-top: 1rem;">
+                💰 Pay $50
+            </button>
+            <div id="paymentMessage" style="margin-top: 1rem;"></div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/admin.js"></script>
+    <script src="/js/networking.js"></script>
+    
+    <script>
+        // Close payment modal function
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+        
+        // Add animation to content changes
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    const container = document.getElementById('contentContainer');
+                    if (container) {
+                        container.style.animation = 'fadeIn 0.5s ease';
+                        setTimeout(() => {
+                            container.style.animation = '';
+                        }, 500);
+                    }
+                }
+            });
+        });
+        
+        observer.observe(document.getElementById('contentContainer'), { childList: true });
+    </script>
+</body>
+</html>
