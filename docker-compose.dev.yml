@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  football-app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: football-ground-management-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app              # sync local code to container
+      - /app/node_modules   # prevent overwrite
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped

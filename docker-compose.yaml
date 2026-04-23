@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  football-app:
+    build: .
+    container_name: football-ground-management
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
