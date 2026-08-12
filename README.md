@@ -1,37 +1,175 @@
-# FootyGround - Football Match Management System
+# SportsHub — Futsal & Cricket Match Booking Platform
 
-A complete web application for managing football ground bookings, team registrations, and match scheduling with Stripe payment integration.
+A two-sided sports management platform: teams register, build a squad, browse
+open slots at a venue, reserve one, invite an opponent, get accepted, pay,
+and play — with an admin side to approve teams, manage venues, and watch
+platform-wide stats. Built as a **realistic full-stack prototype**:
 
-## Features
+- **Backend** — Node.js + Express, JWT auth, bcrypt password hashing, and a
+  synchronous JSON-file datastore (`backend/data/db.json`). No native
+  database engine to install — just `npm install && npm start`.
+- **Frontend** — Next.js 14 (App Router) + TypeScript + Tailwind CSS +
+  Framer Motion + Recharts.
 
-- Team registration and authentication
-- Match scheduling with time slot availability check
-- Secure payment processing with Stripe
-- Real-time match status updates
-- Team profiles and match history
-- Admin dashboard (coming soon)
+## What's real vs. what's mocked
 
-## Prerequisites
+This is a working full-stack app, not a static mockup — every screen reads
+and writes through the real API below. Two things are intentionally
+simplified for a local/demo environment:
 
-- Node.js (v14 or higher)
-- Firebase account (for database and authentication)
-- Stripe account (for payment processing)
+1. **Database.** Instead of PostgreSQL, the backend uses a small
+   synchronous JSON-file store (`backend/src/db.js`). All mutating routes
+   run synchronously with no `await` between "check availability" and
+   "write the booking," so within a single Node process this gives the same
+   race-free guarantee a `UNIQUE` constraint + transaction would in
+   PostgreSQL — verified below. Swapping in Prisma + PostgreSQL later means
+   changing `db.js` and keeping every route the same.
+2. **Payments.** There's a full payment lifecycle (pending → pay → paid →
+   confirmed, with a transaction history), but `POST /api/payments/:id/pay`
+   is a mock gateway that always succeeds. Swap in Stripe by replacing that
+   one handler with a real charge call.
 
-## Installation
+Everything else — auth, team registration, squad limits, slot generation,
+**double-booking prevention**, invitations, notifications, booking
+expiry/countdown, rankings, admin moderation — is implemented end-to-end
+and was tested against the running server (see "Verified flows" below).
 
-1. Clone the repository:
+## Quick start
+
+You need two terminals (or two panes), plus Node.js 18+.
+
+### 1. Backend
+
 ```bash
-git clone <your-repo-url>
-cd football-ground-management
-
-
-Create a Firebase project and enable Authentication and Firestore
-
-Create a Stripe account and get your API keys
-
-Copy .env.example to .env and fill in your credentials:
-
-
+cd backend
 npm install
-npm start
-npm run dev
+npm run seed     # populates realistic demo data (20 teams, 220 players, matches, payments)
+npm start        # http://localhost:4000
+```
+
+### 2. Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev       # http://localhost:3000
+```
+
+The frontend talks to `http://localhost:4000/api` by default — see
+`frontend/.env.local` (`NEXT_PUBLIC_API_URL`) if you need to change it.
+
+### Demo logins
+
+| Role  | Email                | Password   |
+|-------|-----------------------|------------|
+| Team  | demo@team.com          | Demo@123   |
+| Admin | admin@sportshub.com    | Admin@123  |
+
+Every other seeded team's manager account is `manager<teamId>@example.com`
+with password `Team@123` (team IDs 2–20; see `backend/src/seed.js`).
+
+### Fonts note
+
+`app/layout.tsx` uses system font stacks instead of `next/font/google`
+(Space Grotesk / Inter / JetBrains Mono) so the project builds in sandboxes
+without internet access. On your machine, uncomment the `next/font/google`
+import at the top of `frontend/app/layout.tsx` and swap it in — the CSS
+variable names (`--font-display`, `--font-body`, `--font-mono`) already
+match, so no other file needs to change.
+
+## Verified flows
+
+These were run against the live server while building this project:
+
+- Team login → JWT issued, `/auth/me` returns the correct team.
+- Reserve a slot → booking created with `status: reserved` and a 10-minute
+  `expiresAt`.
+- **A second team attempting to book the same venue/date/time is rejected
+  with `409 Sorry, this slot has just been booked by another team.`** —
+  double booking is not possible.
+- Invite an opponent → invitation created, notification delivered to the
+  invited team.
+- Opponent accepts → match created (`awaiting_payment`), payment record
+  created.
+- Pay → payment marked `paid`, match becomes `confirmed`, booking becomes
+  `confirmed`, both teams notified.
+- Admin stats endpoint reflects the above in real time (revenue, active
+  bookings, completed/cancelled counts).
+- `npm run build` on the frontend completes cleanly (0 TypeScript errors,
+  19 routes).
+
+## Project structure
+
+```
+sportsplatform/
+├── backend/
+│   ├── src/
+│   │   ├── db.js          # JSON-file datastore (swap for Prisma/Postgres later)
+│   │   ├── auth.js        # JWT + bcrypt + route guards
+│   │   ├── helpers.js     # rankings, stats, slot generation, notifications
+│   │   ├── seed.js        # demo data generator
+│   │   ├── app.js         # every API route
+│   │   └── server.js      # entrypoint
+│   └── data/db.json       # generated by `npm run seed` (gitignored on first run)
+└── frontend/
+    ├── app/
+    │   ├── page.tsx                    # landing page
+    │   ├── register/                   # 3-step team registration
+    │   ├── login/, admin/login/        # team & admin auth
+    │   ├── dashboard/                  # team dashboard (protected)
+    │   │   ├── page.tsx                # overview
+    │   │   ├── players/                # squad management + formation view
+    │   │   ├── schedule/               # slot booking + invite flow
+    │   │   ├── invitations/            # accept/reject challenges
+    │   │   ├── payments/               # pay & transaction history
+    │   │   ├── notifications/
+    │   │   └── team-profile/           # edit own team
+    │   ├── admin/                      # admin dashboard (protected)
+    │   │   ├── page.tsx                # stats + charts
+    │   │   ├── teams/, venues/, matches/
+    │   ├── teams/[id]/                 # public team profile
+    │   ├── find-match/                 # browse teams & open matches
+    │   └── rankings/                   # leaderboard
+    ├── components/                     # Navbar, sidebars, UI primitives, Countdown, etc.
+    └── lib/                            # API client, auth context, toast context
+```
+
+## API reference (selected)
+
+```
+POST   /api/auth/register              Team registration (multi-step payload)
+POST   /api/auth/login                 Team or admin login
+GET    /api/auth/me
+
+GET    /api/sports
+GET    /api/venues?sportId=&city=
+GET    /api/slots?venueId=&date=       Generated slots + availability
+
+POST   /api/bookings                   Reserve a slot (10-min hold)
+POST   /api/bookings/:id/invite        Challenge an opponent
+POST   /api/bookings/:id/cancel
+POST   /api/invitations/:id/accept
+POST   /api/invitations/:id/reject
+POST   /api/payments/:id/pay           Mock gateway, always succeeds
+POST   /api/matches/:id/result         Submit a result
+GET    /api/rankings?sportId=
+
+GET    /api/admin/stats
+GET    /api/admin/teams
+PATCH  /api/admin/teams/:id/status
+GET    /api/admin/venues, /api/admin/matches, /api/admin/payments
+```
+
+Full list in `backend/src/app.js`.
+
+## What to build next
+
+If you take this further, the highest-leverage next steps are:
+
+1. Swap `backend/src/db.js` for Prisma + PostgreSQL (schema is already
+   effectively modeled by the JS objects — mirror `data/db.json`'s shape
+   into `schema.prisma`).
+2. Swap the mock payment handler for Stripe (webhook verification, refunds).
+3. Add tournament brackets/fixture generation (data model already reserves
+   space for it in the spec; not implemented in this build).
+4. Add real image upload (team logos, player photos) via object storage.

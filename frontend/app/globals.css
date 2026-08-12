@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  /* System font stacks stand in for Space Grotesk / Inter / JetBrains Mono
+     so the app builds without reaching Google Fonts. See app/layout.tsx for
+     how to switch to the real webfonts once you have normal internet access. */
+  --font-display: -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', Consolas, 'Courier New', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  background-color: #05070c;
+  color: #f5f7fa;
+}
+
+.glass {
+  background: rgba(17, 23, 38, 0.55);
+  border: 1px solid rgba(199, 206, 219, 0.09);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-strong {
+  background: rgba(17, 23, 38, 0.78);
+  border: 1px solid rgba(199, 206, 219, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.stat-number {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+.scoreline {
+  position: relative;
+}
+.scoreline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(43, 217, 124, 0.5), transparent 70%);
+}
+
+/* Focus visibility for keyboard nav */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #2bd97c;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #05070c;
+}
+::-webkit-scrollbar-thumb {
+  background: #26314a;
+  border-radius: 8px;
+}
+
+/* Rotating "3D" ball — CSS sphere, avoids a heavy WebGL dependency while
+   still delivering the spinning, lit, floodlit-court feel from the brief. */
+.ball-3d {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,255,255,0.55), rgba(255,255,255,0) 42%),
+    radial-gradient(circle at 65% 70%, rgba(0,0,0,0.35), transparent 60%),
+    conic-gradient(from 0deg, #14351f, #2bd97c, #14351f 25%, #0e2417 50%, #2bd97c 75%, #14351f);
+  box-shadow: 0 20px 60px -10px rgba(43, 217, 124, 0.55), inset -10px -10px 30px rgba(0,0,0,0.5);
+  animation: spin-slow 14s linear infinite;
+}
+
+.ball-3d.cricket {
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,255,255,0.5), rgba(255,255,255,0) 40%),
+    radial-gradient(circle at 65% 70%, rgba(0,0,0,0.4), transparent 60%),
+    conic-gradient(from 20deg, #4a120a, #f2664b, #4a120a 25%, #2a0b05 50%, #f2664b 75%, #4a120a);
+  box-shadow: 0 20px 60px -10px rgba(242, 102, 75, 0.55), inset -10px -10px 30px rgba(0,0,0,0.5);
+  animation: spin-slow 18s linear infinite reverse;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ball-3d {
+    animation: none;
+  }
+}
+
+.floodlight-bg {
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(43,217,124,0.15), transparent 40%),
+    radial-gradient(circle at 85% 15%, rgba(255,209,102,0.10), transparent 35%),
+    radial-gradient(circle at 50% 100%, rgba(242,102,75,0.08), transparent 40%);
+}
