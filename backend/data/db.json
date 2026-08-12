@@ -654,7 +654,7 @@
       "captainEmail": "ahmadishaq41455@gmail.com",
       "social": {},
       "preferredFormat": "test",
-      "status": "pending",
+      "status": "approved",
       "verified": false,
       "rating": 0,
       "createdAt": 1786559660576
@@ -3590,6 +3590,19 @@
       "matchType": "Friendly Match",
       "status": "invited",
       "createdAt": 1786559035552
+    },
+    {
+      "id": 17,
+      "venueId": 1,
+      "sportId": 1,
+      "date": "2026-08-12",
+      "time": "09:00",
+      "teamId": 1,
+      "opponentTeamId": null,
+      "matchType": "Friendly Match",
+      "status": "reserved",
+      "expiresAt": 1786560961063,
+      "createdAt": 1786560361063
     }
   ],
   "matches": [
@@ -4050,6 +4063,35 @@
         "teamId": 21
       },
       "createdAt": 1786559660917
+    },
+    {
+      "id": 4,
+      "user": "demo@team.com",
+      "action": "login",
+      "meta": {
+        "role": "team"
+      },
+      "createdAt": 1786560224272
+    },
+    {
+      "id": 5,
+      "user": "admin@sportshub.com",
+      "action": "login",
+      "meta": {
+        "role": "admin"
+      },
+      "createdAt": 1786560400962
+    },
+    {
+      "id": 6,
+      "user": "admin@sportshub.com",
+      "action": "team_status_changed",
+      "meta": {
+        "teamId": 21,
+        "previous": "pending",
+        "status": "approved"
+      },
+      "createdAt": 1786560442325
     }
   ],
   "seq": {
@@ -4058,12 +4100,12 @@
     "teams": 21,
     "players": 220,
     "users": 22,
-    "bookings": 16,
+    "bookings": 17,
     "matches": 15,
     "invitations": 1,
     "payments": 15,
     "notifications": 1,
     "ratings": 0,
-    "auditLogs": 3
+    "auditLogs": 6
   }
 }
