@@ -1,0 +1,64 @@
+# docker-compose.prod.yml — production deployment
+#
+# Usage on your server:
+#   cp .env.example .env        # then edit .env with real values
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# This exposes everything through a single nginx reverse proxy on port 80
+# (put your own TLS-terminating proxy / load balancer in front of that,
+# e.g. Caddy, Traefik, or your cloud provider's LB — or add a certbot
+# volume to this nginx service if you want it to also handle TLS).
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sportshub-backend
+    environment:
+      PORT: 4000
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - backend_data:/app/data
+    restart: always
+    networks:
+      - sportshub
+    # No published ports — only reachable from other containers on the
+    # sportshub network (nginx proxies /api to it).
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Must be the PUBLIC URL browsers will call (through nginx/your
+        # domain), not the internal service name — this gets baked into
+        # the client JS bundle at build time.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    container_name: sportshub-frontend
+    restart: always
+    networks:
+      - sportshub
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: sportshub-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - sportshub
+    restart: always
+
+networks:
+  sportshub:
+    driver: bridge
+
+volumes:
+  backend_data:

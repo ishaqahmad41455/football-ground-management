@@ -1,0 +1,37 @@
+# docker-compose.yml — local development
+#
+# Usage:
+#   docker compose up --build
+#
+# Frontend -> http://localhost:3000
+# Backend  -> http://localhost:4000
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sportshub-backend
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      JWT_SECRET: dev-secret-change-me
+    volumes:
+      # Persist the JSON datastore on the host so data survives
+      # `docker compose down` / rebuilds.
+      - ./backend/data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000/api
+    container_name: sportshub-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
