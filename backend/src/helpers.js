@@ -135,6 +135,29 @@ function publicTeam(team) {
   return { ...team, players, stats: computeTeamStats(team.id) };
 }
 
+// ---- Ground-ownership helpers (multi-tenant support) ----
+
+// All grounds (venues) managed by a given ground-owner user.
+function venuesOwnedBy(userId) {
+  const { data } = db;
+  return data.venues.filter((v) => v.ownerId === userId);
+}
+
+// True if the given user owns the given venue.
+function ownsVenue(userId, venueId) {
+  const { data } = db;
+  const venue = data.venues.find((v) => v.id === Number(venueId));
+  return !!venue && venue.ownerId === userId;
+}
+
+function publicVenueSummary(venue) {
+  const { data } = db;
+  return {
+    ...venue,
+    teamCount: data.teams.filter((t) => t.venueId === venue.id).length,
+  };
+}
+
 module.exports = {
   notify,
   audit,
@@ -144,5 +167,8 @@ module.exports = {
   computeTeamStats,
   computeRankings,
   publicTeam,
+  venuesOwnedBy,
+  ownsVenue,
+  publicVenueSummary,
   ACTIVE_BOOKING_STATUSES,
 };

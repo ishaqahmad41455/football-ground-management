@@ -15,6 +15,13 @@ interface Sport {
   squadLimit: number;
 }
 
+interface Venue {
+  id: number;
+  name: string;
+  city: string;
+  sportIds: number[];
+}
+
 interface PlayerDraft {
   name: string;
   jerseyNumber: number;
@@ -32,11 +39,13 @@ export default function RegisterPage() {
 
   const [step, setStep] = useState(1);
   const [sports, setSports] = useState<Sport[]>([]);
+  const [venues, setVenues] = useState<Venue[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   const [team, setTeam] = useState({
     name: '',
     sportId: '',
+    venueId: '',
     description: '',
     city: '',
     area: '',
@@ -54,10 +63,14 @@ export default function RegisterPage() {
 
   useEffect(() => {
     api<Sport[]>('/sports', { auth: false }).then(setSports).catch(() => {});
+    api<Venue[]>('/venues', { auth: false }).then(setVenues).catch(() => {});
   }, []);
 
   const selectedSport = sports.find((s) => s.id === Number(team.sportId));
   const squadLimit = selectedSport?.squadLimit ?? 11;
+
+  // Only grounds that support the chosen sport can be selected.
+  const availableVenues = team.sportId ? venues.filter((v) => v.sportIds.includes(Number(team.sportId))) : [];
 
   function updatePlayer(idx: number, patch: Partial<PlayerDraft>) {
     setPlayers((prev) => prev.map((p, i) => (i === idx ? { ...p, ...patch } : p)));
@@ -73,8 +86,8 @@ export default function RegisterPage() {
   }
 
   function validateStep1() {
-    if (!team.name || !team.sportId || !team.city || !team.captainName || !team.captainPhone || !team.captainEmail) {
-      setError('Please fill in team name, sport, city, and captain details.');
+    if (!team.name || !team.sportId || !team.venueId || !team.city || !team.captainName || !team.captainPhone || !team.captainEmail) {
+      setError('Please fill in team name, sport, ground, city, and captain details.');
       return false;
     }
     setError('');
@@ -113,7 +126,7 @@ export default function RegisterPage() {
         players: players.filter((p) => p.name.trim()),
         account,
       });
-      push('success', `Welcome, ${team.name}! Your team is registered and pending approval.`);
+      push('success', `Welcome, ${team.name}! Your team is registered and pending approval from your ground.`);
       router.push('/dashboard');
     } catch (e) {
       const msg = e instanceof ApiError ? e.message : 'Registration failed. Please try again.';
@@ -159,7 +172,11 @@ export default function RegisterPage() {
                 <input className={inputClass} value={team.name} onChange={(e) => setTeam({ ...team, name: e.target.value })} placeholder="Thunder FC" />
               </Field>
               <Field label="Sport">
-                <select className={inputClass} value={team.sportId} onChange={(e) => setTeam({ ...team, sportId: e.target.value })}>
+                <select
+                  className={inputClass}
+                  value={team.sportId}
+                  onChange={(e) => setTeam({ ...team, sportId: e.target.value, venueId: '' })}
+                >
                   <option value="">Select a sport</option>
                   {sports.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -168,14 +185,34 @@ export default function RegisterPage() {
                   ))}
                 </select>
               </Field>
+              <div className="sm:col-span-2">
+                <Field label="Futsal Ground">
+                  <select
+                    className={inputClass}
+                    value={team.venueId}
+                    onChange={(e) => {
+                      const v = venues.find((x) => x.id === Number(e.target.value));
+                      setTeam({ ...team, venueId: e.target.value, homeGround: v?.name || '' });
+                    }}
+                    disabled={!team.sportId}
+                  >
+                    <option value="">{team.sportId ? 'Select the ground you want to register under' : 'Pick a sport first'}</option>
+                    {availableVenues.map((v) => (
+                      <option key={v.id} value={v.id}>
+                        {v.name} · {v.city}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <p className="text-xs text-mist-700 mt-1.5">
+                  Your team will register under this ground — its manager reviews and approves your registration.
+                </p>
+              </div>
               <Field label="City">
                 <input className={inputClass} value={team.city} onChange={(e) => setTeam({ ...team, city: e.target.value })} placeholder="Rawalpindi" />
               </Field>
               <Field label="Area">
                 <input className={inputClass} value={team.area} onChange={(e) => setTeam({ ...team, area: e.target.value })} placeholder="Sector F-10" />
-              </Field>
-              <Field label="Home Ground">
-                <input className={inputClass} value={team.homeGround} onChange={(e) => setTeam({ ...team, homeGround: e.target.value })} placeholder="Thunder Arena" />
               </Field>
               <Field label="Preferred Playing Format">
                 <input className={inputClass} value={team.preferredFormat} onChange={(e) => setTeam({ ...team, preferredFormat: e.target.value })} placeholder="5-a-side / T20" />

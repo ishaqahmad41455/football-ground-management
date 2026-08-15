@@ -12,6 +12,7 @@ export default function Footer() {
         <div className="flex gap-5">
           <Link href="/find-match" className="hover:text-mist-100">Find a Match</Link>
           <Link href="/rankings" className="hover:text-mist-100">Rankings</Link>
+          <Link href="/ground-owner/login" className="hover:text-mist-100">Ground Owner</Link>
           <Link href="/admin/login" className="hover:text-mist-100">Admin</Link>
         </div>
       </div>

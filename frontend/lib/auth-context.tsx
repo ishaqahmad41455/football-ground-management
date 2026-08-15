@@ -3,12 +3,13 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { api } from './api';
 
-type Role = 'team' | 'admin' | null;
+export type Role = 'team' | 'admin' | 'ground_owner' | null;
 
 interface Team {
   id: number;
   name: string;
   sportId: number;
+  venueId: number;
   logo: string | null;
   city: string;
   status: string;
@@ -16,9 +17,18 @@ interface Team {
   [key: string]: any;
 }
 
+interface Venue {
+  id: number;
+  name: string;
+  city: string;
+  ownerId: number | null;
+  [key: string]: any;
+}
+
 interface AuthState {
   role: Role;
   team: Team | null;
+  venues: Venue[]; // populated only when role === 'ground_owner'
   name: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<Role>;
@@ -32,6 +42,7 @@ const AuthContext = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role>(null);
   const [team, setTeam] = useState<Team | null>(null);
+  const [venues, setVenues] = useState<Venue[]>([]);
   const [name, setName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -45,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const me = await api<any>('/auth/me');
       setRole(me.role);
       setTeam(me.team);
+      setVenues(me.venues || []);
       setName(me.name);
     } catch {
       localStorage.removeItem('sportshub_token');
@@ -62,6 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('sportshub_token', res.token);
     setRole(res.role);
     setTeam(res.team);
+    setVenues(res.venues || []);
     setName(res.name);
     return res.role as Role;
   }, []);
@@ -77,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('sportshub_token');
     setRole(null);
     setTeam(null);
+    setVenues([]);
     setName(null);
   }, []);
 
@@ -85,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [loadMe]);
 
   return (
-    <AuthContext.Provider value={{ role, team, name, loading, login, registerTeam, logout, refreshTeam }}>
+    <AuthContext.Provider value={{ role, team, venues, name, loading, login, registerTeam, logout, refreshTeam }}>
       {children}
     </AuthContext.Provider>
   );

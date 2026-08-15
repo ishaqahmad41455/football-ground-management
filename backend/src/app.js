@@ -11,6 +11,9 @@ const {
   computeTeamStats,
   computeRankings,
   publicTeam,
+  venuesOwnedBy,
+  ownsVenue,
+  publicVenueSummary,
   ACTIVE_BOOKING_STATUSES,
 } = require('./helpers');
 
@@ -34,6 +37,20 @@ function getTeamOr404(res, id) {
   return team;
 }
 
+// Loads a venue and 403s unless req.user (a ground_owner) owns it, or is admin.
+function getOwnedVenueOr403(req, res, venueId) {
+  const venue = db.data.venues.find((v) => v.id === Number(venueId));
+  if (!venue) {
+    err(res, 404, 'Ground not found.');
+    return null;
+  }
+  if (req.user.role !== 'admin' && venue.ownerId !== req.user.id) {
+    err(res, 403, 'You do not manage this ground.');
+    return null;
+  }
+  return venue;
+}
+
 // ---------- AUTH ----------
 
 app.post('/api/auth/register', (req, res) => {
@@ -41,6 +58,9 @@ app.post('/api/auth/register', (req, res) => {
   const { team, players, account } = body;
   if (!team || !account || !account.email || !account.password) {
     return err(res, 400, 'Missing required registration fields.');
+  }
+  if (!team.venueId) {
+    return err(res, 400, 'Please select the futsal ground you want to register your team under.');
   }
   if (account.password !== account.confirmPassword) {
     return err(res, 400, 'Passwords do not match.');
@@ -50,6 +70,12 @@ app.post('/api/auth/register', (req, res) => {
   }
   const sport = db.data.sports.find((s) => s.id === Number(team.sportId));
   if (!sport) return err(res, 400, 'Please select a valid sport.');
+
+  const venue = db.data.venues.find((v) => v.id === Number(team.venueId));
+  if (!venue) return err(res, 400, 'Please select a valid ground.');
+  if (!venue.sportIds.includes(sport.id)) {
+    return err(res, 400, 'The selected ground does not support this sport.');
+  }
 
   const squadLimit = sport.squadLimit;
   const incomingPlayers = Array.isArray(players) ? players.slice(0, squadLimit) : [];
@@ -66,16 +92,18 @@ app.post('/api/auth/register', (req, res) => {
     id: db.nextId('teams'),
     name: team.name,
     sportId: sport.id,
+    venueId: venue.id,
     logo: team.logo || null,
     description: team.description || '',
     city: team.city || '',
     area: team.area || '',
-    homeGround: team.homeGround || '',
+    homeGround: venue.name,
     captainName: team.captainName || '',
     captainPhone: team.captainPhone || '',
     captainEmail: team.captainEmail || account.email,
     social: team.social || {},
     preferredFormat: team.preferredFormat || '',
+    // Pending until the ground owner (or a super admin) approves it.
     status: 'pending',
     verified: false,
     rating: 0,
@@ -109,7 +137,11 @@ app.post('/api/auth/register', (req, res) => {
   };
   db.data.users.push(user);
   db.persist();
-  audit(user.email, 'team_registered', { teamId: newTeam.id });
+  audit(user.email, 'team_registered', { teamId: newTeam.id, venueId: venue.id });
+
+  if (venue.ownerId) {
+    notify(venue.ownerId, 'team_registered', `${newTeam.name} registered under ${venue.name} and is awaiting your approval.`);
+  }
 
   const token = signToken(user);
   res.status(201).json({ token, team: publicTeam(newTeam), role: 'team' });
@@ -124,14 +156,16 @@ app.post('/api/auth/login', (req, res) => {
   const token = signToken(user);
   audit(user.email, 'login', { role: user.role });
   const team = user.teamId ? publicTeam(db.data.teams.find((t) => t.id === user.teamId)) : null;
-  res.json({ token, role: user.role, team, name: user.name });
+  const venues = user.role === 'ground_owner' ? venuesOwnedBy(user.id) : undefined;
+  res.json({ token, role: user.role, team, name: user.name, venues });
 });
 
 app.get('/api/auth/me', requireAuth, (req, res) => {
   const user = db.data.users.find((u) => u.id === req.user.id);
   if (!user) return err(res, 404, 'User not found.');
   const team = user.teamId ? publicTeam(db.data.teams.find((t) => t.id === user.teamId)) : null;
-  res.json({ role: user.role, team, name: user.name, email: user.email });
+  const venues = user.role === 'ground_owner' ? venuesOwnedBy(user.id) : undefined;
+  res.json({ role: user.role, team, name: user.name, email: user.email, venues });
 });
 
 // ---------- SPORTS ----------
@@ -164,7 +198,7 @@ app.patch('/api/sports/:id', requireAuth, requireRole('admin'), (req, res) => {
   res.json(sport);
 });
 
-// ---------- VENUES ----------
+// ---------- VENUES (grounds) ----------
 
 app.get('/api/venues', (req, res) => {
   const { sportId, city } = req.query;
@@ -174,14 +208,20 @@ app.get('/api/venues', (req, res) => {
   res.json(list);
 });
 
+// Super Admin: create a new ground, optionally assigning an existing ground owner.
 app.post('/api/venues', requireAuth, requireRole('admin'), (req, res) => {
   const v = req.body || {};
   if (!v.name || !v.sportIds || !v.openingTime || !v.closingTime) {
     return err(res, 400, 'Name, sports, opening and closing times are required.');
   }
+  if (v.ownerId) {
+    const owner = db.data.users.find((u) => u.id === Number(v.ownerId) && u.role === 'ground_owner');
+    if (!owner) return err(res, 400, 'Invalid ground owner.');
+  }
   const venue = {
     id: db.nextId('venues'),
     status: 'active',
+    ownerId: v.ownerId ? Number(v.ownerId) : null,
     slotDurationMinutes: 90,
     breakMinutes: 15,
     pricePerSlot: 3000,
@@ -192,7 +232,7 @@ app.post('/api/venues', requireAuth, requireRole('admin'), (req, res) => {
   };
   db.data.venues.push(venue);
   db.persist();
-  audit(req.user.email, 'venue_created', { venueId: venue.id });
+  audit(req.user.email, 'venue_created', { venueId: venue.id, ownerId: venue.ownerId });
   res.status(201).json(venue);
 });
 
@@ -413,11 +453,12 @@ app.post('/api/payments/:id/pay', requireAuth, requireRole('team'), (req, res) =
 // ---------- MATCHES ----------
 
 app.get('/api/matches', (req, res) => {
-  const { sportId, teamId, status } = req.query;
+  const { sportId, teamId, status, venueId } = req.query;
   let list = db.data.matches;
   if (sportId) list = list.filter((m) => m.sportId === Number(sportId));
   if (teamId) list = list.filter((m) => m.teamAId === Number(teamId) || m.teamBId === Number(teamId));
   if (status) list = list.filter((m) => m.status === status);
+  if (venueId) list = list.filter((m) => m.venueId === Number(venueId));
   res.json(list.sort((a, b) => b.createdAt - a.createdAt));
 });
 
@@ -435,7 +476,10 @@ app.post('/api/matches/:id/result', requireAuth, (req, res) => {
   const match = db.data.matches.find((m) => m.id === Number(req.params.id));
   if (!match) return err(res, 404, 'Match not found.');
   const isParticipant = req.user.role === 'team' && (req.user.teamId === match.teamAId || req.user.teamId === match.teamBId);
-  if (req.user.role !== 'admin' && !isParticipant) return err(res, 403, 'Only match participants or an admin can submit a result.');
+  const isGroundOwner = req.user.role === 'ground_owner' && ownsVenue(req.user.id, match.venueId);
+  if (req.user.role !== 'admin' && !isParticipant && !isGroundOwner) {
+    return err(res, 403, 'Only match participants, the ground owner, or an admin can submit a result.');
+  }
   if (match.status !== 'confirmed') return err(res, 400, 'Results can only be submitted for confirmed matches.');
 
   match.result = req.body || {};
@@ -458,11 +502,12 @@ app.get('/api/rankings', (req, res) => {
 // ---------- TEAMS ----------
 
 app.get('/api/teams', (req, res) => {
-  const { sportId, city, search } = req.query;
+  const { sportId, city, search, venueId } = req.query;
   let list = db.data.teams.filter((t) => t.status === 'approved');
   if (sportId) list = list.filter((t) => t.sportId === Number(sportId));
   if (city) list = list.filter((t) => t.city.toLowerCase() === String(city).toLowerCase());
   if (search) list = list.filter((t) => t.name.toLowerCase().includes(String(search).toLowerCase()));
+  if (venueId) list = list.filter((t) => t.venueId === Number(venueId));
   res.json(list.map((t) => ({ ...t, stats: computeTeamStats(t.id) })));
 });
 
@@ -539,14 +584,23 @@ app.delete('/api/teams/:id/players/:playerId', requireAuth, requireRole('team'),
 
 // ---------- NOTIFICATIONS ----------
 
-app.get('/api/notifications/mine', requireAuth, requireRole('team'), (req, res) => {
-  const mine = db.data.notifications.filter((n) => n.teamId === req.user.teamId).sort((a, b) => b.createdAt - a.createdAt);
-  res.json(mine);
+app.get('/api/notifications/mine', requireAuth, (req, res) => {
+  let mine;
+  if (req.user.role === 'team') {
+    mine = db.data.notifications.filter((n) => n.teamId === req.user.teamId);
+  } else if (req.user.role === 'ground_owner') {
+    mine = db.data.notifications.filter((n) => n.ownerId === req.user.id);
+  } else {
+    return err(res, 403, 'Not applicable for this role.');
+  }
+  res.json(mine.sort((a, b) => b.createdAt - a.createdAt));
 });
 
-app.post('/api/notifications/:id/read', requireAuth, requireRole('team'), (req, res) => {
-  const n = db.data.notifications.find((x) => x.id === Number(req.params.id) && x.teamId === req.user.teamId);
+app.post('/api/notifications/:id/read', requireAuth, (req, res) => {
+  const n = db.data.notifications.find((x) => x.id === Number(req.params.id));
   if (!n) return err(res, 404, 'Notification not found.');
+  const isMine = (req.user.role === 'team' && n.teamId === req.user.teamId) || (req.user.role === 'ground_owner' && n.ownerId === req.user.id);
+  if (!isMine) return err(res, 403, 'Not your notification.');
   n.read = true;
   db.persist();
   res.json(n);
@@ -575,7 +629,164 @@ app.post('/api/matches/:id/rate', requireAuth, requireRole('team'), (req, res) =
   res.status(201).json(rating);
 });
 
-// ---------- ADMIN ----------
+// ==================== GROUND OWNER ====================
+// Everything below is scoped to venue(s) where venue.ownerId === req.user.id.
+
+app.get('/api/ground-owner/venues', requireAuth, requireRole('ground_owner'), (req, res) => {
+  res.json(venuesOwnedBy(req.user.id).map(publicVenueSummary));
+});
+
+app.patch('/api/ground-owner/venues/:id', requireAuth, requireRole('ground_owner'), (req, res) => {
+  const venue = getOwnedVenueOr403(req, res, req.params.id);
+  if (!venue) return;
+  // Ground owners can tune their own operating parameters, but cannot
+  // reassign ownership or rename/relocate the ground itself — that stays
+  // with the Super Admin.
+  const editable = ['openingTime', 'closingTime', 'slotDurationMinutes', 'breakMinutes', 'pricePerSlot', 'weekendPricePerSlot', 'address', 'capacity', 'images', 'status'];
+  for (const key of editable) if (key in req.body) venue[key] = req.body[key];
+  db.persist();
+  res.json(venue);
+});
+
+app.get('/api/ground-owner/teams', requireAuth, requireRole('ground_owner'), (req, res) => {
+  const venueIds = venuesOwnedBy(req.user.id).map((v) => v.id);
+  const teams = db.data.teams.filter((t) => venueIds.includes(t.venueId));
+  res.json(
+    teams.map((t) => ({
+      ...t,
+      stats: computeTeamStats(t.id),
+      playerCount: db.data.players.filter((p) => p.teamId === t.id).length,
+    }))
+  );
+});
+
+app.patch('/api/ground-owner/teams/:id/status', requireAuth, requireRole('ground_owner'), (req, res) => {
+  const team = db.data.teams.find((t) => t.id === Number(req.params.id));
+  if (!team) return err(res, 404, 'Team not found.');
+  if (!ownsVenue(req.user.id, team.venueId)) return err(res, 403, 'This team is not registered under your ground.');
+  const { status } = req.body || {};
+  if (!['pending', 'approved', 'suspended', 'blocked'].includes(status)) return err(res, 400, 'Invalid status.');
+  const previous = team.status;
+  team.status = status;
+  db.persist();
+  audit(req.user.email, 'team_status_changed', { teamId: team.id, previous, status });
+  res.json(team);
+});
+
+app.get('/api/ground-owner/matches', requireAuth, requireRole('ground_owner'), (req, res) => {
+  const venueIds = venuesOwnedBy(req.user.id).map((v) => v.id);
+  res.json(db.data.matches.filter((m) => venueIds.includes(m.venueId)).sort((a, b) => b.createdAt - a.createdAt));
+});
+
+// Ground owner directly schedules a match between two teams registered at
+// their ground (skips the team-initiated reserve → invite → accept flow).
+app.post('/api/ground-owner/matches', requireAuth, requireRole('ground_owner'), (req, res) => {
+  releaseExpiredBookings();
+  const { venueId, teamAId, teamBId, date, time, matchType } = req.body || {};
+  const venue = getOwnedVenueOr403(req, res, venueId);
+  if (!venue) return;
+  if (!date || !time) return err(res, 400, 'Date and time are required.');
+
+  const teamA = getTeamOr404(res, teamAId);
+  if (!teamA) return;
+  const teamB = getTeamOr404(res, teamBId);
+  if (!teamB) return;
+  if (teamA.id === teamB.id) return err(res, 400, 'A team cannot play itself.');
+  if (teamA.venueId !== venue.id || teamB.venueId !== venue.id) {
+    return err(res, 400, 'Both teams must be registered under this ground.');
+  }
+  if (teamA.status !== 'approved' || teamB.status !== 'approved') {
+    return err(res, 400, 'Both teams must be approved before scheduling a match.');
+  }
+  if (isSlotTaken(venue.id, date, time)) {
+    return err(res, 409, 'This slot is already booked at your ground.');
+  }
+
+  const booking = {
+    id: db.nextId('bookings'),
+    venueId: venue.id,
+    sportId: teamA.sportId,
+    date,
+    time,
+    teamId: teamA.id,
+    opponentTeamId: teamB.id,
+    matchType: matchType || 'League Match',
+    status: 'confirmed',
+    createdAt: Date.now(),
+  };
+  db.data.bookings.push(booking);
+
+  const match = {
+    id: db.nextId('matches'),
+    bookingId: booking.id,
+    teamAId: teamA.id,
+    teamBId: teamB.id,
+    sportId: booking.sportId,
+    venueId: venue.id,
+    date,
+    time,
+    matchType: booking.matchType,
+    status: 'confirmed',
+    result: null,
+    createdAt: Date.now(),
+  };
+  db.data.matches.push(match);
+  db.persist();
+
+  notify(teamA.id, 'match_confirmed', `📅 ${venue.name} scheduled your match vs ${teamB.name} on ${date} at ${time}.`);
+  notify(teamB.id, 'match_confirmed', `📅 ${venue.name} scheduled your match vs ${teamA.name} on ${date} at ${time}.`);
+
+  res.status(201).json(match);
+});
+
+app.patch('/api/ground-owner/matches/:id', requireAuth, requireRole('ground_owner'), (req, res) => {
+  const match = db.data.matches.find((m) => m.id === Number(req.params.id));
+  if (!match) return err(res, 404, 'Match not found.');
+  if (!ownsVenue(req.user.id, match.venueId)) return err(res, 403, 'This match is not at your ground.');
+  const editable = ['date', 'time', 'matchType', 'status'];
+  for (const key of editable) if (key in req.body) match[key] = req.body[key];
+  db.persist();
+  res.json(match);
+});
+
+app.post('/api/ground-owner/matches/:id/result', requireAuth, requireRole('ground_owner'), (req, res) => {
+  const match = db.data.matches.find((m) => m.id === Number(req.params.id));
+  if (!match) return err(res, 404, 'Match not found.');
+  if (!ownsVenue(req.user.id, match.venueId)) return err(res, 403, 'This match is not at your ground.');
+  if (match.status !== 'confirmed') return err(res, 400, 'Results can only be submitted for confirmed matches.');
+  match.result = req.body || {};
+  match.status = 'completed';
+  db.persist();
+  notify(match.teamAId, 'result_submitted', 'The result for your match has been recorded.');
+  notify(match.teamBId, 'result_submitted', 'The result for your match has been recorded.');
+  res.json(match);
+});
+
+app.get('/api/ground-owner/bookings', requireAuth, requireRole('ground_owner'), (req, res) => {
+  releaseExpiredBookings();
+  const venueIds = venuesOwnedBy(req.user.id).map((v) => v.id);
+  res.json(db.data.bookings.filter((b) => venueIds.includes(b.venueId)));
+});
+
+app.get('/api/ground-owner/stats', requireAuth, requireRole('ground_owner'), (req, res) => {
+  const venueIds = venuesOwnedBy(req.user.id).map((v) => v.id);
+  const teams = db.data.teams.filter((t) => venueIds.includes(t.venueId));
+  const matches = db.data.matches.filter((m) => venueIds.includes(m.venueId));
+  const bookings = db.data.bookings.filter((b) => venueIds.includes(b.venueId));
+  const payments = db.data.payments.filter((p) => matches.some((m) => m.id === p.matchId));
+  res.json({
+    totalGrounds: venueIds.length,
+    totalTeams: teams.length,
+    pendingTeams: teams.filter((t) => t.status === 'pending').length,
+    totalMatches: matches.length,
+    upcomingMatches: matches.filter((m) => m.status === 'confirmed').length,
+    completedMatches: matches.filter((m) => m.status === 'completed').length,
+    activeBookings: bookings.filter((b) => ACTIVE_BOOKING_STATUSES.includes(b.status)).length,
+    revenue: payments.filter((p) => p.status === 'paid').reduce((s, p) => s + p.amount, 0),
+  });
+});
+
+// ==================== ADMIN (Super Admin) ====================
 
 app.get('/api/admin/stats', requireAuth, requireRole('admin'), (req, res) => {
   const { data } = db;
@@ -593,6 +804,9 @@ app.get('/api/admin/stats', requireAuth, requireRole('admin'), (req, res) => {
     totalRevenue: revenue,
     pendingPayments,
     activeBookings: data.bookings.filter((b) => ACTIVE_BOOKING_STATUSES.includes(b.status)).length,
+    totalGrounds: data.venues.length,
+    unassignedGrounds: data.venues.filter((v) => !v.ownerId).length,
+    totalGroundOwners: data.users.filter((u) => u.role === 'ground_owner').length,
     sportsPopularity: data.sports.map((s) => ({
       sport: s.name,
       matches: data.matches.filter((m) => m.sportId === s.id).length,
@@ -602,10 +816,11 @@ app.get('/api/admin/stats', requireAuth, requireRole('admin'), (req, res) => {
 });
 
 app.get('/api/admin/teams', requireAuth, requireRole('admin'), (req, res) => {
-  const { status, sportId } = req.query;
+  const { status, sportId, venueId } = req.query;
   let list = db.data.teams;
   if (status) list = list.filter((t) => t.status === status);
   if (sportId) list = list.filter((t) => t.sportId === Number(sportId));
+  if (venueId) list = list.filter((t) => t.venueId === Number(venueId));
   res.json(list.map((t) => ({ ...t, stats: computeTeamStats(t.id), playerCount: db.data.players.filter((p) => p.teamId === t.id).length })));
 });
 
@@ -629,6 +844,63 @@ app.delete('/api/admin/teams/:id', requireAuth, requireRole('admin'), (req, res)
   db.persist();
   audit(req.user.email, 'team_deleted', { teamId: removed.id });
   res.status(204).end();
+});
+
+// ---- Ground owner management (Super Admin only) ----
+
+app.get('/api/admin/ground-owners', requireAuth, requireRole('admin'), (req, res) => {
+  const owners = db.data.users.filter((u) => u.role === 'ground_owner');
+  res.json(
+    owners.map((u) => ({
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      createdAt: u.createdAt,
+      venues: venuesOwnedBy(u.id).map((v) => ({ id: v.id, name: v.name, city: v.city })),
+    }))
+  );
+});
+
+app.post('/api/admin/ground-owners', requireAuth, requireRole('admin'), (req, res) => {
+  const { name, email, password, venueId } = req.body || {};
+  if (!name || !email || !password) return err(res, 400, 'Name, email and password are required.');
+  if (db.data.users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
+    return err(res, 409, 'An account with this email already exists.');
+  }
+  let venue = null;
+  if (venueId) {
+    venue = db.data.venues.find((v) => v.id === Number(venueId));
+    if (!venue) return err(res, 400, 'Invalid ground.');
+    if (venue.ownerId) return err(res, 400, 'This ground already has an owner assigned.');
+  }
+  const owner = {
+    id: db.nextId('users'),
+    email,
+    passwordHash: hashPassword(password),
+    role: 'ground_owner',
+    teamId: null,
+    name,
+    createdAt: Date.now(),
+  };
+  db.data.users.push(owner);
+  if (venue) venue.ownerId = owner.id;
+  db.persist();
+  audit(req.user.email, 'ground_owner_created', { ownerId: owner.id, venueId: venue ? venue.id : null });
+  res.status(201).json({ id: owner.id, email: owner.email, name: owner.name, venues: venue ? [venue] : [] });
+});
+
+app.patch('/api/admin/venues/:id/owner', requireAuth, requireRole('admin'), (req, res) => {
+  const venue = db.data.venues.find((v) => v.id === Number(req.params.id));
+  if (!venue) return err(res, 404, 'Ground not found.');
+  const { ownerId } = req.body || {};
+  if (ownerId) {
+    const owner = db.data.users.find((u) => u.id === Number(ownerId) && u.role === 'ground_owner');
+    if (!owner) return err(res, 400, 'Invalid ground owner.');
+  }
+  venue.ownerId = ownerId ? Number(ownerId) : null;
+  db.persist();
+  audit(req.user.email, 'venue_owner_assigned', { venueId: venue.id, ownerId: venue.ownerId });
+  res.json(venue);
 });
 
 app.get('/api/admin/payments', requireAuth, requireRole('admin'), (req, res) => {

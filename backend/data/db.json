@@ -3,200 +3,236 @@
     {
       "id": 1,
       "email": "admin@sportshub.com",
-      "passwordHash": "$2b$10$C6sHTi89K9cvw0wuqCGUjOPffr6F4bI7GkWpUohhx.KD9Z7dIDlL.",
+      "passwordHash": "$2b$10$bfmeuYgOEw5ATR2/93NIVe7GjejCKh88hFskrrkfpxwa6fIRZKAuG",
       "role": "admin",
       "teamId": null,
       "name": "Platform Admin",
-      "createdAt": 1786559031437
+      "createdAt": 1786777605072
     },
     {
       "id": 2,
-      "email": "demo@team.com",
-      "passwordHash": "$2b$10$RzvorJRx1kwjxWD6yMwL2exw7MPHJxJ0UDZicov.M/L7.4dMzCj5W",
-      "role": "team",
-      "teamId": 1,
-      "name": "Captain 1",
-      "createdAt": 1786559031700
+      "email": "owner@ground.com",
+      "passwordHash": "$2b$10$i1HzZIJOPoOI737vORo.BOnD29T1WGRacc3.Y47kCrhwkrqrRKCoq",
+      "role": "ground_owner",
+      "teamId": null,
+      "name": "Demo Ground Owner",
+      "createdAt": 1786777605217
     },
     {
       "id": 3,
-      "email": "manager2@example.com",
-      "passwordHash": "$2b$10$d1kkmI.kvP9rYqj0gsQL5.TDXtMjcYzknYEbkU54Cki.IvQM1dE3u",
-      "role": "team",
-      "teamId": 2,
-      "name": "Captain 2",
-      "createdAt": 1786559031903
+      "email": "owner2@sportshub.com",
+      "passwordHash": "$2b$10$tcvEeRlGdmE76Q7Q2e2TO.dwQEEawrPeZd3vvb3wmOuNm.bhyInp6",
+      "role": "ground_owner",
+      "teamId": null,
+      "name": "Victory Futsal Court Manager",
+      "createdAt": 1786777605370
     },
     {
       "id": 4,
-      "email": "manager3@example.com",
-      "passwordHash": "$2b$10$PiuWULopWHtpmop6JBvxOOfkLsoadcGzZ9dVAXYw6okT5R7Gj39cy",
-      "role": "team",
-      "teamId": 3,
-      "name": "Captain 3",
-      "createdAt": 1786559032080
+      "email": "owner3@sportshub.com",
+      "passwordHash": "$2b$10$pVm5Si.CDzCNE0NziWtMJ.0spzCvLNMGK05aqKyhGpHXEOELebke6",
+      "role": "ground_owner",
+      "teamId": null,
+      "name": "National Cricket Ground Manager",
+      "createdAt": 1786777605542
     },
     {
       "id": 5,
-      "email": "manager4@example.com",
-      "passwordHash": "$2b$10$H4qWhRXuO57Ztv/iVJ3ih.HEgOzbPUVqpwcGjCkkOrwSytqcyRvli",
-      "role": "team",
-      "teamId": 4,
-      "name": "Captain 4",
-      "createdAt": 1786559032237
+      "email": "owner4@sportshub.com",
+      "passwordHash": "$2b$10$7F2FIGPM1aFF52iwtkTV7OQ0HaTDGf.weeukDWDpEGgYAjZPdjszq",
+      "role": "ground_owner",
+      "teamId": null,
+      "name": "Green Oval Manager",
+      "createdAt": 1786777605700
     },
     {
       "id": 6,
-      "email": "manager5@example.com",
-      "passwordHash": "$2b$10$pn23S/2J9GAZVpCarLC3euIMvZW9DpZNMKG3FMGYvruyS/yDzZkBO",
+      "email": "demo@team.com",
+      "passwordHash": "$2b$10$vq7rPjQJxe/p4QuH6LMT6uD7xc9h.A87hCCkeTaK2/sarAmBiaNDK",
       "role": "team",
-      "teamId": 5,
-      "name": "Captain 5",
-      "createdAt": 1786559032391
+      "teamId": 1,
+      "name": "Captain 1",
+      "createdAt": 1786777606010
     },
     {
       "id": 7,
-      "email": "manager6@example.com",
-      "passwordHash": "$2b$10$YFvKc6NhUV/XjtFx5QG1KOoIduMkPwDCUs3ULl0d7eNlAjuHs1ncG",
+      "email": "manager2@example.com",
+      "passwordHash": "$2b$10$3xaLDZxXH5ZhjDyZg1BtM.tsfpQ2dZFhEUM41MDWyq52L6YIzHOge",
       "role": "team",
-      "teamId": 6,
-      "name": "Captain 6",
-      "createdAt": 1786559032547
+      "teamId": 2,
+      "name": "Captain 2",
+      "createdAt": 1786777606166
     },
     {
       "id": 8,
-      "email": "manager7@example.com",
-      "passwordHash": "$2b$10$dKbsahjrSzWti.ADG0m7weSWVoKtCDdVuflX6aHo.3bX7OQiwYIcm",
+      "email": "manager3@example.com",
+      "passwordHash": "$2b$10$7JLNg6QVXpdVYqpyMB2Gku4ee5M25GpSkUbaAe4W5qXQVxbjA1xP2",
       "role": "team",
-      "teamId": 7,
-      "name": "Captain 7",
-      "createdAt": 1786559032864
+      "teamId": 3,
+      "name": "Captain 3",
+      "createdAt": 1786777606313
     },
     {
       "id": 9,
-      "email": "manager8@example.com",
-      "passwordHash": "$2b$10$YSiQV7zd17JALGJ2Db5.GO4PsVHrJt.9w49hE7SZndwrrddD8M1Ly",
+      "email": "manager4@example.com",
+      "passwordHash": "$2b$10$Bt7SZE4P1AsH70MB9Jh6beTOVv7689XVAvInQ1rIi3ueJCRbfBXhy",
       "role": "team",
-      "teamId": 8,
-      "name": "Captain 8",
-      "createdAt": 1786559033086
+      "teamId": 4,
+      "name": "Captain 4",
+      "createdAt": 1786777606466
     },
     {
       "id": 10,
-      "email": "manager9@example.com",
-      "passwordHash": "$2b$10$U3c1VHKI1x6lVtFRCg84BOqRTfa1DKp3l0QQiZVxdhQ.H/V/vvRp.",
+      "email": "manager5@example.com",
+      "passwordHash": "$2b$10$5RN3LSQedku.YjAWRNAeVeOm/d.4AKVWDn50eCModMH4hOywkuIbC",
       "role": "team",
-      "teamId": 9,
-      "name": "Captain 9",
-      "createdAt": 1786559033415
+      "teamId": 5,
+      "name": "Captain 5",
+      "createdAt": 1786777606616
     },
     {
       "id": 11,
-      "email": "manager10@example.com",
-      "passwordHash": "$2b$10$YeYw6At7ZEBnfZCuEMcFx.gAmKbCwW3F6QJHdMB8xPbSuldV1STQ6",
+      "email": "manager6@example.com",
+      "passwordHash": "$2b$10$4s.s8ieNG1SrhhT/yZre0eeZmfc72.MO9RomjNDbO/bJpTD38aWRW",
       "role": "team",
-      "teamId": 10,
-      "name": "Captain 10",
-      "createdAt": 1786559033654
+      "teamId": 6,
+      "name": "Captain 6",
+      "createdAt": 1786777606762
     },
     {
       "id": 12,
-      "email": "manager11@example.com",
-      "passwordHash": "$2b$10$4GUa3gsRr0ERmcnUW7k0sOUNQH9AIUvvI6FHMaZUtVTjn7ewi2t9a",
+      "email": "manager7@example.com",
+      "passwordHash": "$2b$10$xPBd3DFyeYq3T73WlYpE.OiDkL6JFkbwRfCMNzXseI9MJlr3VWPRO",
       "role": "team",
-      "teamId": 11,
-      "name": "Captain 1",
-      "createdAt": 1786559033844
+      "teamId": 7,
+      "name": "Captain 7",
+      "createdAt": 1786777606912
     },
     {
       "id": 13,
-      "email": "manager12@example.com",
-      "passwordHash": "$2b$10$k8fIMT0fJOFHvBEPN.tc/O92Hd5qs/oQVgGc0ILYyYlSVNNb.HOaq",
+      "email": "manager8@example.com",
+      "passwordHash": "$2b$10$rWrlOhvhTp1U6VQijorELeKDCxtHM1wKiX6xxSa6rY5o52YYhCRZi",
       "role": "team",
-      "teamId": 12,
-      "name": "Captain 2",
-      "createdAt": 1786559034040
+      "teamId": 8,
+      "name": "Captain 8",
+      "createdAt": 1786777607063
     },
     {
       "id": 14,
-      "email": "manager13@example.com",
-      "passwordHash": "$2b$10$iTRZCG4YFggz38.DEb8PN.jb/VnVCXOoEHya76o1.uVg.y1WjqjHG",
+      "email": "manager9@example.com",
+      "passwordHash": "$2b$10$kr3fAQku..sP0m9uXlDBDezid79XIQE1gyqErni.deSt.sA7F5Dcq",
       "role": "team",
-      "teamId": 13,
-      "name": "Captain 3",
-      "createdAt": 1786559034203
+      "teamId": 9,
+      "name": "Captain 9",
+      "createdAt": 1786777607214
     },
     {
       "id": 15,
-      "email": "manager14@example.com",
-      "passwordHash": "$2b$10$/lAHHh3OOhWYlTy4ZVLkN.zdeb8c/DBlq3QQjBinec6BfjxBSomam",
+      "email": "manager10@example.com",
+      "passwordHash": "$2b$10$DHcbrVSWgtef3UZs2XUFvOPw/b85WK4bWLB5Hl82wzREb9iW5th66",
       "role": "team",
-      "teamId": 14,
-      "name": "Captain 4",
-      "createdAt": 1786559034364
+      "teamId": 10,
+      "name": "Captain 10",
+      "createdAt": 1786777607366
     },
     {
       "id": 16,
-      "email": "manager15@example.com",
-      "passwordHash": "$2b$10$aLLFWii4QcGVf9Azx1dF2eGurQcQ3t5ALYpJJG9nuAQGHmd0p6fLS",
+      "email": "manager11@example.com",
+      "passwordHash": "$2b$10$Fvo4rtehpw1mgZ2sP6WTfO.Tm.QJ6bF6FMsNavWFwk3s.EwCXKn3.",
       "role": "team",
-      "teamId": 15,
-      "name": "Captain 5",
-      "createdAt": 1786559034528
+      "teamId": 11,
+      "name": "Captain 1",
+      "createdAt": 1786777607518
     },
     {
       "id": 17,
-      "email": "manager16@example.com",
-      "passwordHash": "$2b$10$ipxHyyMyFOT12IFa5K8aoOJdUuxnhpK8KdeajdtCcWleLrsNxDvwa",
+      "email": "manager12@example.com",
+      "passwordHash": "$2b$10$R15KmKL8KB9Ess7Dlmu9Gu4UxQGVvwxTu.0lDPIRk4fwwmlIfgziK",
       "role": "team",
-      "teamId": 16,
-      "name": "Captain 6",
-      "createdAt": 1786559034688
+      "teamId": 12,
+      "name": "Captain 2",
+      "createdAt": 1786777607670
     },
     {
       "id": 18,
-      "email": "manager17@example.com",
-      "passwordHash": "$2b$10$ncxPCyjzwg5TYsKUxyxuD.RL41WC4JSCwe.izmKNPdcB46zN3GgeO",
+      "email": "manager13@example.com",
+      "passwordHash": "$2b$10$TtURlW2OnhIgByArc/BZUek9HusB5r9BylXORwOgoYHQw8hqfdlMq",
       "role": "team",
-      "teamId": 17,
-      "name": "Captain 7",
-      "createdAt": 1786559034841
+      "teamId": 13,
+      "name": "Captain 3",
+      "createdAt": 1786777607816
     },
     {
       "id": 19,
-      "email": "manager18@example.com",
-      "passwordHash": "$2b$10$fwPvlDn/uQCkGmpFNuz8yeGw1tlE12ygtKKOp485Exvg.xgXH/pHW",
+      "email": "manager14@example.com",
+      "passwordHash": "$2b$10$cPj5NMvhp2vWuWuUa0jTw.pCJX6ENcm1kyxCHhCEVyMLhyOZl0uJm",
       "role": "team",
-      "teamId": 18,
-      "name": "Captain 8",
-      "createdAt": 1786559035010
+      "teamId": 14,
+      "name": "Captain 4",
+      "createdAt": 1786777607948
     },
     {
       "id": 20,
-      "email": "manager19@example.com",
-      "passwordHash": "$2b$10$esDeX/Uw8G2R.OKBCTnQ3.x3H2tnx7NqXg.8Tm9XPuToqHgHaKkcq",
+      "email": "manager15@example.com",
+      "passwordHash": "$2b$10$uC504eCgX2u.yBaccOhsn.baXQxL39wFV8f.2HRHUwmyFlVuZNAgG",
       "role": "team",
-      "teamId": 19,
-      "name": "Captain 9",
-      "createdAt": 1786559035178
+      "teamId": 15,
+      "name": "Captain 5",
+      "createdAt": 1786777608049
     },
     {
       "id": 21,
-      "email": "manager20@example.com",
-      "passwordHash": "$2b$10$Y3jI8UTBJBz86C4ooyJN2OTDMkWyRXY6337aL1gNMo0Kun0iBmVXS",
+      "email": "manager16@example.com",
+      "passwordHash": "$2b$10$fXJOaR6K7KOqEZjwzDFGLensnrYpsyKTBNHlmCM4r0gsd86/tRDmy",
       "role": "team",
-      "teamId": 20,
-      "name": "Captain 10",
-      "createdAt": 1786559035359
+      "teamId": 16,
+      "name": "Captain 6",
+      "createdAt": 1786777608148
     },
     {
       "id": 22,
-      "email": "ahmadishaq41455@gmail.com",
-      "passwordHash": "$2b$10$K3cgYFyZ/epOeSnC3WJgt.DKglQxnotlNgHov//HM3J12cL.fpdpG",
+      "email": "manager17@example.com",
+      "passwordHash": "$2b$10$1Mdqq.yyuMkl3X9vMIpBHu/OWbHfPR.y.10G4cIdKnhjiHhmZyc0i",
+      "role": "team",
+      "teamId": 17,
+      "name": "Captain 7",
+      "createdAt": 1786777608246
+    },
+    {
+      "id": 23,
+      "email": "manager18@example.com",
+      "passwordHash": "$2b$10$V/Gy/KqLwXAwZdGIn.cgL.VgrpydSkm4qU3Y7Gvny0f.j.aESvHFu",
+      "role": "team",
+      "teamId": 18,
+      "name": "Captain 8",
+      "createdAt": 1786777608344
+    },
+    {
+      "id": 24,
+      "email": "manager19@example.com",
+      "passwordHash": "$2b$10$/pNELWTazLskhCUcJEd03ePtv0jf579SYkML2mtmDQw5fqLcwUfZa",
+      "role": "team",
+      "teamId": 19,
+      "name": "Captain 9",
+      "createdAt": 1786777608443
+    },
+    {
+      "id": 25,
+      "email": "manager20@example.com",
+      "passwordHash": "$2b$10$NktCxgQql.KPj1pI4DvMEulyHdHJwF7Ks4/.q5wavSnc3ILlKgLCK",
+      "role": "team",
+      "teamId": 20,
+      "name": "Captain 10",
+      "createdAt": 1786777608542
+    },
+    {
+      "id": 26,
+      "email": "newcomers@example.com",
+      "passwordHash": "$2b$10$NQiH4oEtO.cHgaobavcF7eRPXAUAugzXUwuKK/v986Er1zS5Iq0VG",
       "role": "team",
       "teamId": 21,
-      "name": "test",
-      "createdAt": 1786559660886
+      "name": "Bilal Ahmed",
+      "createdAt": 1786777608741
     }
   ],
   "teams": [
@@ -204,6 +240,7 @@
       "id": 1,
       "name": "Thunder FC",
       "sportId": 1,
+      "venueId": 1,
       "logo": null,
       "description": "Thunder FC is a competitive futsal team known for discipline and teamwork.",
       "city": "Rawalpindi",
@@ -219,13 +256,14 @@
       "preferredFormat": "5-a-side",
       "status": "approved",
       "verified": true,
-      "rating": 4,
-      "createdAt": 1786559031438
+      "rating": 4.1,
+      "createdAt": 1786777605853
     },
     {
       "id": 2,
       "name": "Warriors United",
       "sportId": 1,
+      "venueId": 2,
       "logo": null,
       "description": "Warriors United is a competitive futsal team known for discipline and teamwork.",
       "city": "Islamabad",
@@ -242,12 +280,13 @@
       "status": "approved",
       "verified": false,
       "rating": 4.8,
-      "createdAt": 1786472631700
+      "createdAt": 1786691206011
     },
     {
       "id": 3,
       "name": "Falcon Futsal",
       "sportId": 1,
+      "venueId": 1,
       "logo": null,
       "description": "Falcon Futsal is a competitive futsal team known for discipline and teamwork.",
       "city": "Lahore",
@@ -263,13 +302,14 @@
       "preferredFormat": "5-a-side",
       "status": "approved",
       "verified": false,
-      "rating": 3.6,
-      "createdAt": 1786386231904
+      "rating": 4.6,
+      "createdAt": 1786604806166
     },
     {
       "id": 4,
       "name": "Titans Arena",
       "sportId": 1,
+      "venueId": 2,
       "logo": null,
       "description": "Titans Arena is a competitive futsal team known for discipline and teamwork.",
       "city": "Rawalpindi",
@@ -285,13 +325,14 @@
       "preferredFormat": "5-a-side",
       "status": "approved",
       "verified": true,
-      "rating": 4.6,
-      "createdAt": 1786299832080
+      "rating": 4.1,
+      "createdAt": 1786518406313
     },
     {
       "id": 5,
       "name": "Blaze FC",
       "sportId": 1,
+      "venueId": 1,
       "logo": null,
       "description": "Blaze FC is a competitive futsal team known for discipline and teamwork.",
       "city": "Islamabad",
@@ -307,13 +348,14 @@
       "preferredFormat": "5-a-side",
       "status": "approved",
       "verified": false,
-      "rating": 3.8,
-      "createdAt": 1786213432237
+      "rating": 4.7,
+      "createdAt": 1786432006466
     },
     {
       "id": 6,
       "name": "Rangers Court",
       "sportId": 1,
+      "venueId": 2,
       "logo": null,
       "description": "Rangers Court is a competitive futsal team known for discipline and teamwork.",
       "city": "Lahore",
@@ -329,13 +371,14 @@
       "preferredFormat": "5-a-side",
       "status": "approved",
       "verified": false,
-      "rating": 4.1,
-      "createdAt": 1786127032391
+      "rating": 3.6,
+      "createdAt": 1786345606616
     },
     {
       "id": 7,
       "name": "Storm Kickers",
       "sportId": 1,
+      "venueId": 1,
       "logo": null,
       "description": "Storm Kickers is a competitive futsal team known for discipline and teamwork.",
       "city": "Rawalpindi",
@@ -351,13 +394,14 @@
       "preferredFormat": "5-a-side",
       "status": "approved",
       "verified": true,
-      "rating": 3.5,
-      "createdAt": 1786040632547
+      "rating": 4.1,
+      "createdAt": 1786259206762
     },
     {
       "id": 8,
       "name": "Nova United",
       "sportId": 1,
+      "venueId": 2,
       "logo": null,
       "description": "Nova United is a competitive futsal team known for discipline and teamwork.",
       "city": "Islamabad",
@@ -373,13 +417,14 @@
       "preferredFormat": "5-a-side",
       "status": "approved",
       "verified": false,
-      "rating": 5,
-      "createdAt": 1785954232864
+      "rating": 4.3,
+      "createdAt": 1786172806912
     },
     {
       "id": 9,
       "name": "Apex Futsal",
       "sportId": 1,
+      "venueId": 1,
       "logo": null,
       "description": "Apex Futsal is a competitive futsal team known for discipline and teamwork.",
       "city": "Lahore",
@@ -395,13 +440,14 @@
       "preferredFormat": "5-a-side",
       "status": "approved",
       "verified": false,
-      "rating": 4.3,
-      "createdAt": 1785867833086
+      "rating": 4.4,
+      "createdAt": 1786086407063
     },
     {
       "id": 10,
       "name": "Rapid Strikers",
       "sportId": 1,
+      "venueId": 2,
       "logo": null,
       "description": "Rapid Strikers is a competitive futsal team known for discipline and teamwork.",
       "city": "Rawalpindi",
@@ -418,12 +464,13 @@
       "status": "approved",
       "verified": true,
       "rating": 4.5,
-      "createdAt": 1785781433415
+      "createdAt": 1786000007214
     },
     {
       "id": 11,
       "name": "Alpha Strikers CC",
       "sportId": 2,
+      "venueId": 3,
       "logo": null,
       "description": "Alpha Strikers CC is a competitive cricket team known for discipline and teamwork.",
       "city": "Rawalpindi",
@@ -439,13 +486,14 @@
       "preferredFormat": "T20",
       "status": "approved",
       "verified": true,
-      "rating": 4.7,
-      "createdAt": 1786559033654
+      "rating": 4.4,
+      "createdAt": 1786777607366
     },
     {
       "id": 12,
       "name": "United Gladiators",
       "sportId": 2,
+      "venueId": 4,
       "logo": null,
       "description": "United Gladiators is a competitive cricket team known for discipline and teamwork.",
       "city": "Islamabad",
@@ -461,13 +509,14 @@
       "preferredFormat": "T20",
       "status": "approved",
       "verified": false,
-      "rating": 4.2,
-      "createdAt": 1786472633844
+      "rating": 3.6,
+      "createdAt": 1786691207518
     },
     {
       "id": 13,
       "name": "Punjab Panthers",
       "sportId": 2,
+      "venueId": 3,
       "logo": null,
       "description": "Punjab Panthers is a competitive cricket team known for discipline and teamwork.",
       "city": "Lahore",
@@ -483,13 +532,14 @@
       "preferredFormat": "T20",
       "status": "approved",
       "verified": false,
-      "rating": 4.7,
-      "createdAt": 1786386234041
+      "rating": 4.4,
+      "createdAt": 1786604807670
     },
     {
       "id": 14,
       "name": "Capital Kings",
       "sportId": 2,
+      "venueId": 4,
       "logo": null,
       "description": "Capital Kings is a competitive cricket team known for discipline and teamwork.",
       "city": "Rawalpindi",
@@ -505,13 +555,14 @@
       "preferredFormat": "T20",
       "status": "approved",
       "verified": true,
-      "rating": 4,
-      "createdAt": 1786299834203
+      "rating": 4.5,
+      "createdAt": 1786518407816
     },
     {
       "id": 15,
       "name": "Northern Knights",
       "sportId": 2,
+      "venueId": 3,
       "logo": null,
       "description": "Northern Knights is a competitive cricket team known for discipline and teamwork.",
       "city": "Islamabad",
@@ -527,13 +578,14 @@
       "preferredFormat": "T20",
       "status": "approved",
       "verified": false,
-      "rating": 4,
-      "createdAt": 1786213434364
+      "rating": 4.6,
+      "createdAt": 1786432007948
     },
     {
       "id": 16,
       "name": "Rawal Royals",
       "sportId": 2,
+      "venueId": 4,
       "logo": null,
       "description": "Rawal Royals is a competitive cricket team known for discipline and teamwork.",
       "city": "Lahore",
@@ -550,12 +602,13 @@
       "status": "approved",
       "verified": false,
       "rating": 4.9,
-      "createdAt": 1786127034528
+      "createdAt": 1786345608049
     },
     {
       "id": 17,
       "name": "Margalla Mavericks",
       "sportId": 2,
+      "venueId": 3,
       "logo": null,
       "description": "Margalla Mavericks is a competitive cricket team known for discipline and teamwork.",
       "city": "Rawalpindi",
@@ -571,13 +624,14 @@
       "preferredFormat": "T20",
       "status": "approved",
       "verified": true,
-      "rating": 4.2,
-      "createdAt": 1786040634688
+      "rating": 4.7,
+      "createdAt": 1786259208148
     },
     {
       "id": 18,
       "name": "Steel Strikers",
       "sportId": 2,
+      "venueId": 4,
       "logo": null,
       "description": "Steel Strikers is a competitive cricket team known for discipline and teamwork.",
       "city": "Islamabad",
@@ -593,13 +647,14 @@
       "preferredFormat": "T20",
       "status": "approved",
       "verified": false,
-      "rating": 4.2,
-      "createdAt": 1785954234841
+      "rating": 4,
+      "createdAt": 1786172808246
     },
     {
       "id": 19,
       "name": "Victory XI",
       "sportId": 2,
+      "venueId": 3,
       "logo": null,
       "description": "Victory XI is a competitive cricket team known for discipline and teamwork.",
       "city": "Lahore",
@@ -615,13 +670,14 @@
       "preferredFormat": "T20",
       "status": "approved",
       "verified": false,
-      "rating": 4.4,
-      "createdAt": 1785867835010
+      "rating": 4.5,
+      "createdAt": 1786086408344
     },
     {
       "id": 20,
       "name": "Iron Warriors CC",
       "sportId": 2,
+      "venueId": 4,
       "logo": null,
       "description": "Iron Warriors CC is a competitive cricket team known for discipline and teamwork.",
       "city": "Rawalpindi",
@@ -637,27 +693,28 @@
       "preferredFormat": "T20",
       "status": "approved",
       "verified": true,
-      "rating": 4.3,
-      "createdAt": 1785781435178
+      "rating": 4.7,
+      "createdAt": 1786000008443
     },
     {
       "id": 21,
-      "name": "test",
+      "name": "Newcomers FC",
       "sportId": 1,
+      "venueId": 1,
       "logo": null,
-      "description": "",
+      "description": "A brand-new squad waiting on ground approval.",
       "city": "Rawalpindi",
-      "area": "f10",
-      "homeGround": "test",
-      "captainName": "test",
-      "captainPhone": "03450444256",
-      "captainEmail": "ahmadishaq41455@gmail.com",
+      "area": "Sector 12",
+      "homeGround": "Thunder Arena",
+      "captainName": "Bilal Ahmed",
+      "captainPhone": "03001112233",
+      "captainEmail": "newcomers@example.com",
       "social": {},
-      "preferredFormat": "test",
-      "status": "approved",
+      "preferredFormat": "5-a-side",
+      "status": "pending",
       "verified": false,
       "rating": 0,
-      "createdAt": 1786559660576
+      "createdAt": 1786777608643
     }
   ],
   "players": [
@@ -3328,6 +3385,7 @@
     {
       "id": 1,
       "status": "active",
+      "ownerId": 2,
       "name": "Thunder Arena",
       "city": "Rawalpindi",
       "address": "Adiala Road, Rawalpindi",
@@ -3346,6 +3404,7 @@
     {
       "id": 2,
       "status": "active",
+      "ownerId": 3,
       "name": "Victory Futsal Court",
       "city": "Islamabad",
       "address": "F-10 Markaz, Islamabad",
@@ -3364,6 +3423,7 @@
     {
       "id": 3,
       "status": "active",
+      "ownerId": 4,
       "name": "National Cricket Ground",
       "city": "Rawalpindi",
       "address": "Chaklala, Rawalpindi",
@@ -3382,6 +3442,7 @@
     {
       "id": 4,
       "status": "active",
+      "ownerId": 5,
       "name": "Green Oval",
       "city": "Lahore",
       "address": "Gulberg, Lahore",
@@ -3403,206 +3464,193 @@
       "id": 1,
       "venueId": 1,
       "sportId": 1,
-      "date": "2026-08-07",
+      "date": "2026-08-10",
       "time": "18:00",
       "teamId": 1,
       "opponentTeamId": 4,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1786127035550
+      "createdAt": 1786345608642
     },
     {
       "id": 2,
       "venueId": 4,
       "sportId": 2,
-      "date": "2026-08-04",
+      "date": "2026-08-07",
       "time": "18:00",
       "teamId": 12,
       "opponentTeamId": 15,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1785867835550
+      "createdAt": 1786086408643
     },
     {
       "id": 3,
       "venueId": 1,
       "sportId": 1,
-      "date": "2026-08-01",
+      "date": "2026-08-04",
       "time": "18:00",
       "teamId": 3,
       "opponentTeamId": 6,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1785608635550
+      "createdAt": 1785827208643
     },
     {
       "id": 4,
       "venueId": 4,
       "sportId": 2,
-      "date": "2026-07-29",
+      "date": "2026-08-01",
       "time": "18:00",
       "teamId": 14,
       "opponentTeamId": 17,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1785349435550
+      "createdAt": 1785568008643
     },
     {
       "id": 5,
       "venueId": 1,
       "sportId": 1,
-      "date": "2026-07-26",
+      "date": "2026-07-29",
       "time": "18:00",
       "teamId": 5,
       "opponentTeamId": 8,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1785090235550
+      "createdAt": 1785308808643
     },
     {
       "id": 6,
       "venueId": 4,
       "sportId": 2,
-      "date": "2026-07-23",
+      "date": "2026-07-26",
       "time": "18:00",
       "teamId": 16,
       "opponentTeamId": 19,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1784831035550
+      "createdAt": 1785049608643
     },
     {
       "id": 7,
       "venueId": 1,
       "sportId": 1,
-      "date": "2026-07-20",
+      "date": "2026-07-23",
       "time": "18:00",
       "teamId": 7,
       "opponentTeamId": 10,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1784571835551
+      "createdAt": 1784790408643
     },
     {
       "id": 8,
       "venueId": 4,
       "sportId": 2,
-      "date": "2026-07-17",
+      "date": "2026-07-20",
       "time": "18:00",
       "teamId": 18,
       "opponentTeamId": 11,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1784312635551
+      "createdAt": 1784531208643
     },
     {
       "id": 9,
       "venueId": 1,
       "sportId": 1,
-      "date": "2026-07-14",
+      "date": "2026-07-17",
       "time": "18:00",
       "teamId": 9,
       "opponentTeamId": 2,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1784053435551
+      "createdAt": 1784272008643
     },
     {
       "id": 10,
       "venueId": 4,
       "sportId": 2,
-      "date": "2026-07-11",
+      "date": "2026-07-14",
       "time": "18:00",
       "teamId": 20,
       "opponentTeamId": 13,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1783794235551
+      "createdAt": 1784012808643
     },
     {
       "id": 11,
       "venueId": 1,
       "sportId": 1,
-      "date": "2026-07-08",
+      "date": "2026-07-11",
       "time": "18:00",
       "teamId": 1,
       "opponentTeamId": 4,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1783535035551
+      "createdAt": 1783753608643
     },
     {
       "id": 12,
       "venueId": 4,
       "sportId": 2,
-      "date": "2026-07-05",
+      "date": "2026-07-08",
       "time": "18:00",
       "teamId": 12,
       "opponentTeamId": 15,
       "matchType": "Competitive Match",
       "status": "confirmed",
-      "createdAt": 1783275835551
+      "createdAt": 1783494408643
     },
     {
       "id": 13,
       "venueId": 1,
       "sportId": 1,
-      "date": "2026-08-15",
+      "date": "2026-08-18",
       "time": "19:00",
       "teamId": 1,
       "opponentTeamId": 2,
       "matchType": "Friendly Match",
       "status": "confirmed",
-      "createdAt": 1786559035551
+      "createdAt": 1786777608643
     },
     {
       "id": 14,
       "venueId": 2,
       "sportId": 1,
-      "date": "2026-08-17",
+      "date": "2026-08-20",
       "time": "17:00",
       "teamId": 3,
       "opponentTeamId": 4,
       "matchType": "Friendly Match",
       "status": "confirmed",
-      "createdAt": 1786559035551
+      "createdAt": 1786777608643
     },
     {
       "id": 15,
       "venueId": 3,
       "sportId": 2,
-      "date": "2026-08-19",
+      "date": "2026-08-22",
       "time": "09:00",
       "teamId": 11,
       "opponentTeamId": 12,
       "matchType": "Friendly Match",
       "status": "confirmed",
-      "createdAt": 1786559035551
+      "createdAt": 1786777608643
     },
     {
       "id": 16,
       "venueId": 1,
       "sportId": 1,
-      "date": "2026-08-14",
+      "date": "2026-08-17",
       "time": "20:30",
       "teamId": 5,
       "opponentTeamId": 1,
       "matchType": "Friendly Match",
       "status": "invited",
-      "createdAt": 1786559035552
-    },
-    {
-      "id": 17,
-      "venueId": 1,
-      "sportId": 1,
-      "date": "2026-08-12",
-      "time": "09:00",
-      "teamId": 1,
-      "opponentTeamId": null,
-      "matchType": "Friendly Match",
-      "status": "reserved",
-      "expiresAt": 1786560961063,
-      "createdAt": 1786560361063
+      "createdAt": 1786777608643
     }
   ],
   "matches": [
@@ -3613,17 +3661,17 @@
       "teamBId": 4,
       "sportId": 1,
       "venueId": 1,
-      "date": "2026-08-07",
+      "date": "2026-08-10",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
-        "scoreA": 3,
+        "scoreA": 0,
         "scoreB": 5,
         "mvp": "Thunder FC",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1786127035550
+      "createdAt": 1786345608642
     },
     {
       "id": 2,
@@ -3632,17 +3680,17 @@
       "teamBId": 15,
       "sportId": 2,
       "venueId": 4,
-      "date": "2026-08-04",
+      "date": "2026-08-07",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
-        "scoreA": 117,
-        "scoreB": 137,
-        "mvp": "Northern Knights",
+        "scoreA": 97,
+        "scoreB": 99,
+        "mvp": "United Gladiators",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1785867835550
+      "createdAt": 1786086408643
     },
     {
       "id": 3,
@@ -3651,17 +3699,17 @@
       "teamBId": 6,
       "sportId": 1,
       "venueId": 1,
-      "date": "2026-08-01",
+      "date": "2026-08-04",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
         "scoreA": 1,
-        "scoreB": 5,
-        "mvp": "Falcon Futsal",
+        "scoreB": 0,
+        "mvp": "Rangers Court",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1785608635550
+      "createdAt": 1785827208643
     },
     {
       "id": 4,
@@ -3670,17 +3718,17 @@
       "teamBId": 17,
       "sportId": 2,
       "venueId": 4,
-      "date": "2026-07-29",
+      "date": "2026-08-01",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
-        "scoreA": 110,
-        "scoreB": 145,
-        "mvp": "Capital Kings",
+        "scoreA": 129,
+        "scoreB": 100,
+        "mvp": "Margalla Mavericks",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1785349435550
+      "createdAt": 1785568008643
     },
     {
       "id": 5,
@@ -3689,17 +3737,17 @@
       "teamBId": 8,
       "sportId": 1,
       "venueId": 1,
-      "date": "2026-07-26",
+      "date": "2026-07-29",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
-        "scoreA": 6,
-        "scoreB": 6,
+        "scoreA": 0,
+        "scoreB": 0,
         "mvp": "Blaze FC",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1785090235550
+      "createdAt": 1785308808643
     },
     {
       "id": 6,
@@ -3708,17 +3756,17 @@
       "teamBId": 19,
       "sportId": 2,
       "venueId": 4,
-      "date": "2026-07-23",
+      "date": "2026-07-26",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
-        "scoreA": 130,
-        "scoreB": 115,
+        "scoreA": 116,
+        "scoreB": 149,
         "mvp": "Rawal Royals",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1784831035550
+      "createdAt": 1785049608643
     },
     {
       "id": 7,
@@ -3727,17 +3775,17 @@
       "teamBId": 10,
       "sportId": 1,
       "venueId": 1,
-      "date": "2026-07-20",
+      "date": "2026-07-23",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
-        "scoreA": 2,
-        "scoreB": 2,
+        "scoreA": 3,
+        "scoreB": 3,
         "mvp": "Rapid Strikers",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1784571835551
+      "createdAt": 1784790408643
     },
     {
       "id": 8,
@@ -3746,17 +3794,17 @@
       "teamBId": 11,
       "sportId": 2,
       "venueId": 4,
-      "date": "2026-07-17",
+      "date": "2026-07-20",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
-        "scoreA": 131,
-        "scoreB": 145,
-        "mvp": "Steel Strikers",
+        "scoreA": 134,
+        "scoreB": 163,
+        "mvp": "Alpha Strikers CC",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1784312635551
+      "createdAt": 1784531208643
     },
     {
       "id": 9,
@@ -3765,17 +3813,17 @@
       "teamBId": 2,
       "sportId": 1,
       "venueId": 1,
-      "date": "2026-07-14",
+      "date": "2026-07-17",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
-        "scoreA": 5,
-        "scoreB": 2,
-        "mvp": "Apex Futsal",
+        "scoreA": 6,
+        "scoreB": 0,
+        "mvp": "Warriors United",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1784053435551
+      "createdAt": 1784272008643
     },
     {
       "id": 10,
@@ -3784,17 +3832,17 @@
       "teamBId": 13,
       "sportId": 2,
       "venueId": 4,
-      "date": "2026-07-11",
+      "date": "2026-07-14",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
-        "scoreA": 121,
-        "scoreB": 165,
+        "scoreA": 93,
+        "scoreB": 90,
         "mvp": "Iron Warriors CC",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1783794235551
+      "createdAt": 1784012808643
     },
     {
       "id": 11,
@@ -3803,17 +3851,17 @@
       "teamBId": 4,
       "sportId": 1,
       "venueId": 1,
-      "date": "2026-07-08",
+      "date": "2026-07-11",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
-        "scoreA": 2,
-        "scoreB": 3,
-        "mvp": "Titans Arena",
+        "scoreA": 3,
+        "scoreB": 0,
+        "mvp": "Thunder FC",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1783535035551
+      "createdAt": 1783753608643
     },
     {
       "id": 12,
@@ -3822,17 +3870,17 @@
       "teamBId": 15,
       "sportId": 2,
       "venueId": 4,
-      "date": "2026-07-05",
+      "date": "2026-07-08",
       "time": "18:00",
       "matchType": "Competitive Match",
       "status": "completed",
       "result": {
-        "scoreA": 169,
-        "scoreB": 179,
+        "scoreA": 134,
+        "scoreB": 157,
         "mvp": "United Gladiators",
         "notes": "Well-fought contest with strong performances on both sides."
       },
-      "createdAt": 1783275835551
+      "createdAt": 1783494408643
     },
     {
       "id": 13,
@@ -3841,12 +3889,12 @@
       "teamBId": 2,
       "sportId": 1,
       "venueId": 1,
-      "date": "2026-08-15",
+      "date": "2026-08-18",
       "time": "19:00",
       "matchType": "Friendly Match",
       "status": "confirmed",
       "result": null,
-      "createdAt": 1786559035551
+      "createdAt": 1786777608643
     },
     {
       "id": 14,
@@ -3855,12 +3903,12 @@
       "teamBId": 4,
       "sportId": 1,
       "venueId": 2,
-      "date": "2026-08-17",
+      "date": "2026-08-20",
       "time": "17:00",
       "matchType": "Friendly Match",
       "status": "confirmed",
       "result": null,
-      "createdAt": 1786559035551
+      "createdAt": 1786777608643
     },
     {
       "id": 15,
@@ -3869,12 +3917,12 @@
       "teamBId": 12,
       "sportId": 2,
       "venueId": 3,
-      "date": "2026-08-19",
+      "date": "2026-08-22",
       "time": "09:00",
       "matchType": "Friendly Match",
       "status": "confirmed",
       "result": null,
-      "createdAt": 1786559035551
+      "createdAt": 1786777608643
     }
   ],
   "invitations": [
@@ -3885,7 +3933,7 @@
       "toTeamId": 1,
       "status": "pending",
       "message": "We would like to challenge your team to a Futsal match this weekend!",
-      "createdAt": 1786559035552
+      "createdAt": 1786777608643
     }
   ],
   "payments": [
@@ -3896,7 +3944,7 @@
       "amount": 3000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1786127035550
+      "createdAt": 1786345608643
     },
     {
       "id": 2,
@@ -3905,7 +3953,7 @@
       "amount": 8000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1785867835550
+      "createdAt": 1786086408643
     },
     {
       "id": 3,
@@ -3914,7 +3962,7 @@
       "amount": 3000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1785608635550
+      "createdAt": 1785827208643
     },
     {
       "id": 4,
@@ -3923,7 +3971,7 @@
       "amount": 8000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1785349435550
+      "createdAt": 1785568008643
     },
     {
       "id": 5,
@@ -3932,7 +3980,7 @@
       "amount": 3000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1785090235550
+      "createdAt": 1785308808643
     },
     {
       "id": 6,
@@ -3941,7 +3989,7 @@
       "amount": 8000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1784831035550
+      "createdAt": 1785049608643
     },
     {
       "id": 7,
@@ -3950,7 +3998,7 @@
       "amount": 3000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1784571835551
+      "createdAt": 1784790408643
     },
     {
       "id": 8,
@@ -3959,7 +4007,7 @@
       "amount": 8000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1784312635551
+      "createdAt": 1784531208643
     },
     {
       "id": 9,
@@ -3968,7 +4016,7 @@
       "amount": 3000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1784053435551
+      "createdAt": 1784272008643
     },
     {
       "id": 10,
@@ -3977,7 +4025,7 @@
       "amount": 8000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1783794235551
+      "createdAt": 1784012808643
     },
     {
       "id": 11,
@@ -3986,7 +4034,7 @@
       "amount": 3000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1783535035551
+      "createdAt": 1783753608643
     },
     {
       "id": 12,
@@ -3995,7 +4043,7 @@
       "amount": 8000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1783275835551
+      "createdAt": 1783494408643
     },
     {
       "id": 13,
@@ -4004,7 +4052,7 @@
       "amount": 3000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1786559035551
+      "createdAt": 1786777608643
     },
     {
       "id": 14,
@@ -4013,7 +4061,7 @@
       "amount": 2500,
       "status": "paid",
       "method": "card",
-      "createdAt": 1786559035551
+      "createdAt": 1786777608643
     },
     {
       "id": 15,
@@ -4022,7 +4070,7 @@
       "amount": 9000,
       "status": "paid",
       "method": "card",
-      "createdAt": 1786559035551
+      "createdAt": 1786777608643
     }
   ],
   "notifications": [
@@ -4032,66 +4080,45 @@
       "type": "invitation",
       "message": "⚽ Blaze FC has challenged your team.",
       "read": false,
-      "createdAt": 1786559035552
+      "createdAt": 1786777608643
+    },
+    {
+      "id": 2,
+      "ownerId": 2,
+      "type": "team_registered",
+      "message": "Newcomers FC registered under Thunder Arena and is awaiting your approval.",
+      "read": false,
+      "createdAt": 1786777608741
     }
   ],
   "ratings": [],
   "auditLogs": [
     {
       "id": 1,
-      "user": "demo@team.com",
+      "user": "admin@sportshub.com",
       "action": "login",
       "meta": {
-        "role": "team"
+        "role": "admin"
       },
-      "createdAt": 1786559332547
+      "createdAt": 1786777989946
     },
     {
       "id": 2,
-      "user": "admin@sportshub.com",
+      "user": "owner@ground.com",
       "action": "login",
       "meta": {
-        "role": "admin"
+        "role": "ground_owner"
       },
-      "createdAt": 1786559509401
+      "createdAt": 1786778046723
     },
     {
       "id": 3,
-      "user": "ahmadishaq41455@gmail.com",
-      "action": "team_registered",
-      "meta": {
-        "teamId": 21
-      },
-      "createdAt": 1786559660917
-    },
-    {
-      "id": 4,
       "user": "demo@team.com",
       "action": "login",
       "meta": {
         "role": "team"
       },
-      "createdAt": 1786560224272
-    },
-    {
-      "id": 5,
-      "user": "admin@sportshub.com",
-      "action": "login",
-      "meta": {
-        "role": "admin"
-      },
-      "createdAt": 1786560400962
-    },
-    {
-      "id": 6,
-      "user": "admin@sportshub.com",
-      "action": "team_status_changed",
-      "meta": {
-        "teamId": 21,
-        "previous": "pending",
-        "status": "approved"
-      },
-      "createdAt": 1786560442325
+      "createdAt": 1786778106547
     }
   ],
   "seq": {
@@ -4099,13 +4126,13 @@
     "venues": 4,
     "teams": 21,
     "players": 220,
-    "users": 22,
-    "bookings": 17,
+    "users": 26,
+    "bookings": 16,
     "matches": 15,
     "invitations": 1,
     "payments": 15,
-    "notifications": 1,
+    "notifications": 2,
     "ratings": 0,
-    "auditLogs": 6
+    "auditLogs": 3
   }
 }

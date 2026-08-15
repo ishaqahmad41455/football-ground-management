@@ -5,11 +5,17 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { Spinner } from './ui';
 
+const LOGIN_PATH_BY_ROLE: Record<string, string> = {
+  admin: '/admin/login',
+  ground_owner: '/ground-owner/login',
+  team: '/login',
+};
+
 export default function ProtectedRoute({
   role,
   children,
 }: {
-  role: 'team' | 'admin';
+  role: 'team' | 'admin' | 'ground_owner';
   children: React.ReactNode;
 }) {
   const { role: currentRole, loading } = useAuth();
@@ -17,7 +23,7 @@ export default function ProtectedRoute({
 
   useEffect(() => {
     if (!loading && currentRole !== role) {
-      router.replace(role === 'admin' ? '/admin/login' : '/login');
+      router.replace(LOGIN_PATH_BY_ROLE[role] || '/login');
     }
   }, [loading, currentRole, role, router]);
 
