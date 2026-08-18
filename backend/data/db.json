@@ -4119,6 +4119,15 @@
         "role": "team"
       },
       "createdAt": 1786778106547
+    },
+    {
+      "id": 4,
+      "user": "admin@sportshub.com",
+      "action": "login",
+      "meta": {
+        "role": "admin"
+      },
+      "createdAt": 1787046364529
     }
   ],
   "seq": {
@@ -4133,6 +4142,6 @@
     "payments": 15,
     "notifications": 2,
     "ratings": 0,
-    "auditLogs": 3
+    "auditLogs": 4
   }
 }
