@@ -1,6 +1,7 @@
 const db = require('./db');
 
-const ACTIVE_BOOKING_STATUSES = ['reserved', 'invited', 'accepted', 'confirmed'];
+// const ACTIVE_BOOKING_STATUSES = ['reserved', 'invited', 'accepted', 'confirmed'];
+const ACTIVE_BOOKING_STATUSES = ['reserved', 'paid', 'invited', 'confirmed'];
 
 function notify(teamId, type, message) {
   const { data, nextId, persist } = db;
@@ -29,25 +30,43 @@ function audit(userEmail, action, meta) {
 
 // Auto-expire reserved bookings whose 10-minute hold has passed.
 // Called defensively at the start of any read/write path that touches bookings.
+// function releaseExpiredBookings() {
+//   const { data, persist } = db;
+//   const now = Date.now();
+//   let changed = false;
+//   for (const booking of data.bookings) {
+//     if (booking.status === 'reserved' && booking.expiresAt && booking.expiresAt < now) {
+//       booking.status = 'expired';
+//       changed = true;
+//       const match = data.matches.find((m) => m.bookingId === booking.id);
+//       if (match && match.status === 'awaiting_payment') {
+//         match.status = 'cancelled';
+//       }
+//     }
+//     // Payment window: awaiting_payment matches expire 30 min after acceptance
+//     if (booking.status === 'accepted' && booking.paymentExpiresAt && booking.paymentExpiresAt < now) {
+//       booking.status = 'expired';
+//       changed = true;
+//       const match = data.matches.find((m) => m.bookingId === booking.id);
+//       if (match) match.status = 'cancelled';
+//     }
+//   }
+//   if (changed) persist();
+// }
+
 function releaseExpiredBookings() {
   const { data, persist } = db;
   const now = Date.now();
   let changed = false;
   for (const booking of data.bookings) {
-    if (booking.status === 'reserved' && booking.expiresAt && booking.expiresAt < now) {
+    if ((booking.status === 'reserved' || booking.status === 'paid') && booking.expiresAt && booking.expiresAt < now) {
+      const wasPaid = booking.status === 'paid';
       booking.status = 'expired';
       changed = true;
-      const match = data.matches.find((m) => m.bookingId === booking.id);
-      if (match && match.status === 'awaiting_payment') {
-        match.status = 'cancelled';
+      if (wasPaid) {
+        const payment = data.payments.find((p) => p.bookingId === booking.id && p.status === 'paid');
+        if (payment) payment.status = 'refunded';
       }
-    }
-    // Payment window: awaiting_payment matches expire 30 min after acceptance
-    if (booking.status === 'accepted' && booking.paymentExpiresAt && booking.paymentExpiresAt < now) {
-      booking.status = 'expired';
-      changed = true;
-      const match = data.matches.find((m) => m.bookingId === booking.id);
-      if (match) match.status = 'cancelled';
     }
   }
   if (changed) persist();

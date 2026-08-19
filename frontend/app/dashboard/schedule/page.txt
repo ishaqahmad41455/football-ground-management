@@ -19,8 +19,6 @@ interface Venue {
   city: string;
   address: string;
   sportIds: number[];
-  easypaisaNumber?: string | null;
-  easypaisaName?: string | null;
 }
 interface Slot {
   time: string;
@@ -33,12 +31,6 @@ interface Team {
   sportId: number;
   city: string;
 }
-
-const METHODS = [
-  { id: 'easypaisa', label: 'Easypaisa', icon: '📱' },
-  { id: 'jazzcash', label: 'JazzCash', icon: '📱' },
-  { id: 'card', label: 'Card', icon: '💳' },
-];
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -57,13 +49,7 @@ export default function SchedulePage() {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
 
-  const [booking, setBooking] = useState<any>(null); // reserved / paid booking
-  const [slotPrice, setSlotPrice] = useState(0);
-
-  const [method, setMethod] = useState('easypaisa');
-  const [phone, setPhone] = useState('');
-  const [paying, setPaying] = useState(false);
-
+  const [booking, setBooking] = useState<any>(null); // reserved booking
   const [opponents, setOpponents] = useState<Team[]>([]);
   const [opponentId, setOpponentId] = useState<number | null>(null);
   const [matchType, setMatchType] = useState('Friendly Match');
@@ -98,36 +84,16 @@ export default function SchedulePage() {
     api<Team[]>(`/teams?sportId=${sportId}`, { auth: false }).then((list) => setOpponents(list.filter((t) => t.id !== team?.id)));
   }, [sportId, team]);
 
-  const venue = venues.find((v) => v.id === venueId);
-
-  async function reserveSlot(time: string, price: number) {
+  async function reserveSlot(time: string) {
     if (!sportId || !venueId) return;
     try {
       const b = await api<any>('/bookings', { method: 'POST', body: { venueId, sportId, date, time, matchType } });
       setBooking(b);
-      setSlotPrice(price);
-      push('success', `Slot ${time} reserved for 10 minutes. Pay the ground fee to continue.`);
+      push('success', `Slot ${time} reserved for 10 minutes.`);
     } catch (e) {
       push('error', e instanceof ApiError ? e.message : 'Could not reserve slot.');
+      // refresh slots to reflect reality
       api<any>(`/slots?venueId=${venueId}&date=${date}`, { auth: false }).then((res) => setSlots(res.slots));
-    }
-  }
-
-  async function payFee() {
-    if (!booking) return;
-    if ((method === 'easypaisa' || method === 'jazzcash') && !phone.trim()) {
-      push('error', `Enter the mobile number you're paying from.`);
-      return;
-    }
-    setPaying(true);
-    try {
-      const res = await api<any>(`/bookings/${booking.id}/pay`, { method: 'POST', body: { method, phone: phone || undefined } });
-      setBooking(res.booking);
-      push('success', 'Payment received! Now invite an opponent to lock in the match.');
-    } catch (e) {
-      push('error', e instanceof ApiError ? e.message : 'Payment failed.');
-    } finally {
-      setPaying(false);
     }
   }
 
@@ -148,23 +114,14 @@ export default function SchedulePage() {
   function releaseAndReset() {
     if (booking) api(`/bookings/${booking.id}/cancel`, { method: 'POST' }).catch(() => {});
     setBooking(null);
-    setPhone('');
     api<any>(`/slots?venueId=${venueId}&date=${date}`, { auth: false }).then((res) => setSlots(res.slots));
   }
 
-  // ---------- STEP 2: pay the ground fee (before inviting) ----------
-  if (booking && booking.status === 'reserved') {
-    const isWallet = method === 'easypaisa' || method === 'jazzcash';
-    const walletNumber = venue?.easypaisaNumber;
-    const qrPayload = walletNumber
-      ? `Pay PKR ${slotPrice.toLocaleString()} to ${venue?.easypaisaName || venue?.name} — ${method === 'easypaisa' ? 'Easypaisa' : 'JazzCash'} ${walletNumber} | Ref: BOOKING-${booking.id}`
-      : '';
-    const qrUrl = qrPayload ? `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrPayload)}` : null;
-
+  if (booking) {
     return (
       <div className="max-w-xl">
         <div className="flex items-center justify-between">
-          <h1 className="font-display font-bold text-2xl">Pay to schedule</h1>
+          <h1 className="font-display font-bold text-2xl">Invite an opponent</h1>
           <div className="text-sm text-mist-500">
             Reservation expires in <Countdown expiresAt={booking.expiresAt} onExpire={() => { push('error', 'Your reservation expired. The slot has been released.'); releaseAndReset(); }} />
           </div>
@@ -172,85 +129,10 @@ export default function SchedulePage() {
 
         <div className="mt-5 glass rounded-2xl p-5 flex items-center justify-between">
           <div>
-            <div className="font-medium">{venue?.name}</div>
-            <div className="text-xs text-mist-500 mt-1">{date} · {booking.time}</div>
-            <div className="mt-2 text-sm text-mist-300 font-mono">PKR {slotPrice.toLocaleString()}</div>
-          </div>
-          <Badge tone="warning">Payment Pending</Badge>
-        </div>
-
-        <p className="mt-4 text-sm text-mist-500">
-          This slot is held for you, but you can't invite an opponent until the ground fee is paid to <strong className="text-mist-300">{venue?.name}</strong>.
-        </p>
-
-        <div className="mt-6 glass rounded-2xl p-6">
-          <span className="block text-xs uppercase tracking-wider text-mist-500 mb-2">Pay with</span>
-          <div className="flex gap-2 flex-wrap">
-            {METHODS.map((m) => (
-              <button
-                key={m.id}
-                type="button"
-                onClick={() => setMethod(m.id)}
-                className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
-                  method === m.id ? 'bg-pitch-500/20 border-pitch-500/40 text-pitch-400' : 'border-white/10 text-mist-500'
-                }`}
-              >
-                {m.icon} {m.label}
-              </button>
-            ))}
-          </div>
-
-          {isWallet && (
-            <div className="mt-5">
-              {!walletNumber ? (
-                <p className="text-sm text-clay-400">
-                  {venue?.name} hasn't set up {method === 'easypaisa' ? 'Easypaisa' : 'JazzCash'} yet. Please pay by card instead.
-                </p>
-              ) : (
-                <div className="flex flex-col items-center gap-3 text-center">
-                  {qrUrl && <img src={qrUrl} alt="Easypaisa payment QR code" className="rounded-xl border border-white/10" width={200} height={200} />}
-                  <p className="text-xs text-mist-500 max-w-xs">
-                    Scan with your {method === 'easypaisa' ? 'Easypaisa' : 'JazzCash'} app to pay <strong className="text-mist-300">PKR {slotPrice.toLocaleString()}</strong> to{' '}
-                    <strong className="text-mist-300">{venue?.easypaisaName || venue?.name}</strong> ({walletNumber}).
-                  </p>
-                  <div className="w-full max-w-xs">
-                    <Field label="Your mobile number">
-                      <input className={inputClass} placeholder="03XXXXXXXXX" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                    </Field>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          <div className="mt-6 flex gap-3">
-            <SecondaryButton onClick={releaseAndReset}>Cancel & Release Slot</SecondaryButton>
-            <PrimaryButton onClick={payFee} disabled={paying || (isWallet && !walletNumber)}>
-              {paying ? 'Confirming…' : `I've Paid PKR ${slotPrice.toLocaleString()}`}
-            </PrimaryButton>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ---------- STEP 3: fee paid — now invite an opponent ----------
-  if (booking && booking.status === 'paid') {
-    return (
-      <div className="max-w-xl">
-        <div className="flex items-center justify-between">
-          <h1 className="font-display font-bold text-2xl">Invite an opponent</h1>
-          <div className="text-sm text-mist-500">
-            Invite within <Countdown expiresAt={booking.expiresAt} onExpire={() => { push('error', 'Your invite window expired. The slot has been released.'); releaseAndReset(); }} />
-          </div>
-        </div>
-
-        <div className="mt-5 glass rounded-2xl p-5 flex items-center justify-between">
-          <div>
-            <div className="font-medium">{venue?.name}</div>
+            <div className="font-medium">{venues.find((v) => v.id === venueId)?.name}</div>
             <div className="text-xs text-mist-500 mt-1">{date} · {booking.time}</div>
           </div>
-          <Badge tone="success">Fee Paid</Badge>
+          <Badge tone="warning">Reserved</Badge>
         </div>
 
         <div className="mt-6 glass rounded-2xl p-6 space-y-5">
@@ -275,7 +157,7 @@ export default function SchedulePage() {
             <textarea className={inputClass} rows={3} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="We would like to challenge your team…" />
           </Field>
           <div className="flex gap-3">
-            <SecondaryButton onClick={releaseAndReset}>Cancel & Refund</SecondaryButton>
+            <SecondaryButton onClick={releaseAndReset}>Cancel & Release Slot</SecondaryButton>
             <PrimaryButton onClick={sendInvite} disabled={!opponentId || sendingInvite}>
               {sendingInvite ? 'Sending…' : 'Send Invitation'}
             </PrimaryButton>
@@ -285,11 +167,10 @@ export default function SchedulePage() {
     );
   }
 
-  // ---------- STEP 1: pick sport / venue / date / slot ----------
   return (
     <div>
       <h1 className="font-display font-bold text-2xl">Schedule a match</h1>
-      <p className="text-mist-500 text-sm mt-1">Reserve a slot, pay the ground fee, then invite an opponent to lock it in.</p>
+      <p className="text-mist-500 text-sm mt-1">Reserve a slot, then invite an opponent to lock it in.</p>
 
       <div className="mt-6 grid sm:grid-cols-3 gap-4">
         <Field label="Sport">
@@ -325,7 +206,7 @@ export default function SchedulePage() {
               <button
                 key={s.time}
                 disabled={s.status === 'booked'}
-                onClick={() => reserveSlot(s.time, s.price)}
+                onClick={() => reserveSlot(s.time)}
                 className={`rounded-xl px-4 py-4 text-left transition-colors border ${
                   s.status === 'booked'
                     ? 'border-white/5 bg-white/2 text-mist-700 cursor-not-allowed'

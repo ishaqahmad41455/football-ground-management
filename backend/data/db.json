@@ -3625,8 +3625,48 @@
       "teamId": 5,
       "opponentTeamId": 1,
       "matchType": "Friendly Match",
+      "status": "expired",
+      "createdAt": 1786777608643,
+      "paymentExpiresAt": 1787132298097
+    },
+    {
+      "id": 17,
+      "venueId": 1,
+      "sportId": 1,
+      "date": "2026-08-19",
+      "time": "09:00",
+      "teamId": 1,
+      "opponentTeamId": 3,
+      "matchType": "Friendly Match",
       "status": "invited",
-      "createdAt": 1786777608643
+      "expiresAt": 1787131077197,
+      "createdAt": 1787130477197
+    },
+    {
+      "id": 18,
+      "venueId": 1,
+      "sportId": 1,
+      "date": "2026-08-19",
+      "time": "12:30",
+      "teamId": 1,
+      "opponentTeamId": 2,
+      "matchType": "Friendly Match",
+      "status": "invited",
+      "expiresAt": 1787133303778,
+      "createdAt": 1787132703778
+    },
+    {
+      "id": 19,
+      "venueId": 1,
+      "sportId": 1,
+      "date": "2026-08-19",
+      "time": "10:45",
+      "teamId": 1,
+      "opponentTeamId": null,
+      "matchType": "Friendly Match",
+      "status": "cancelled",
+      "expiresAt": 1787133576719,
+      "createdAt": 1787132976719
     }
   ],
   "matches": [
@@ -3899,6 +3939,20 @@
       "status": "confirmed",
       "result": null,
       "createdAt": 1786777608643
+    },
+    {
+      "id": 16,
+      "bookingId": 16,
+      "teamAId": 5,
+      "teamBId": 1,
+      "sportId": 1,
+      "venueId": 1,
+      "date": "2026-08-17",
+      "time": "20:30",
+      "matchType": "Friendly Match",
+      "status": "cancelled",
+      "result": null,
+      "createdAt": 1787130498097
     }
   ],
   "invitations": [
@@ -3907,9 +3961,27 @@
       "bookingId": 16,
       "fromTeamId": 5,
       "toTeamId": 1,
-      "status": "pending",
+      "status": "accepted",
       "message": "We would like to challenge your team to a Futsal match this weekend!",
       "createdAt": 1786777608643
+    },
+    {
+      "id": 2,
+      "bookingId": 17,
+      "fromTeamId": 1,
+      "toTeamId": 3,
+      "status": "pending",
+      "message": "",
+      "createdAt": 1787130491230
+    },
+    {
+      "id": 3,
+      "bookingId": 18,
+      "fromTeamId": 1,
+      "toTeamId": 2,
+      "status": "pending",
+      "message": "",
+      "createdAt": 1787132712107
     }
   ],
   "payments": [
@@ -4047,6 +4119,15 @@
       "status": "paid",
       "method": "card",
       "createdAt": 1786777608643
+    },
+    {
+      "id": 16,
+      "matchId": 16,
+      "teamId": 5,
+      "amount": 3000,
+      "status": "pending",
+      "method": null,
+      "createdAt": 1787130498097
     }
   ],
   "notifications": [
@@ -4065,6 +4146,30 @@
       "message": "Newcomers FC registered under Thunder Arena and is awaiting your approval.",
       "read": false,
       "createdAt": 1786777608741
+    },
+    {
+      "id": 3,
+      "teamId": 3,
+      "type": "invitation",
+      "message": "⚽ Thunder FC has challenged your team.",
+      "read": false,
+      "createdAt": 1787130491249
+    },
+    {
+      "id": 4,
+      "teamId": 5,
+      "type": "invitation_accepted",
+      "message": "🏆 Your match invitation has been accepted. Payment is required to confirm.",
+      "read": false,
+      "createdAt": 1787130498112
+    },
+    {
+      "id": 5,
+      "teamId": 2,
+      "type": "invitation",
+      "message": "⚽ Thunder FC has challenged your team.",
+      "read": false,
+      "createdAt": 1787132712124
     }
   ],
   "ratings": [],
@@ -4122,6 +4227,15 @@
         "role": "team"
       },
       "createdAt": 1787129174172
+    },
+    {
+      "id": 7,
+      "user": "demo@team.com",
+      "action": "login",
+      "meta": {
+        "role": "team"
+      },
+      "createdAt": 1787130469541
     }
   ],
   "seq": {
@@ -4130,12 +4244,12 @@
     "teams": 21,
     "players": 220,
     "users": 26,
-    "bookings": 16,
-    "matches": 15,
-    "invitations": 1,
-    "payments": 15,
-    "notifications": 2,
+    "bookings": 19,
+    "matches": 16,
+    "invitations": 3,
+    "payments": 16,
+    "notifications": 5,
     "ratings": 0,
-    "auditLogs": 6
+    "auditLogs": 7
   }
 }

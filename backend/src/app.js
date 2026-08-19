@@ -23,6 +23,7 @@ app.use(express.json({ limit: '5mb' }));
 
 const RESERVATION_MINUTES = 10;
 const PAYMENT_WINDOW_MINUTES = 30;
+const INVITE_WINDOW_MINUTES = 30; // time to send an invite after paying the ground fee
 
 function err(res, code, message) {
   return res.status(code).json({ error: message });
@@ -304,21 +305,77 @@ app.post('/api/bookings', requireAuth, requireRole('team'), (req, res) => {
   res.status(201).json(booking);
 });
 
+// -----------------------------------------new_feature--------------------------------
+app.post('/api/bookings/:id/pay', requireAuth, requireRole('team'), (req, res) => {
+  releaseExpiredBookings();
+  const booking = db.data.bookings.find((b) => b.id === Number(req.params.id));
+  if (!booking) return err(res, 404, 'Booking not found.');
+  if (booking.teamId !== req.user.teamId) return err(res, 403, 'This booking does not belong to your team.');
+  if (booking.status !== 'reserved') return err(res, 400, 'This booking is not awaiting payment (it may have expired or already been paid).');
+
+  const venue = db.data.venues.find((v) => v.id === booking.venueId);
+  const day = new Date(booking.date).getDay();
+  const isWeekend = day === 0 || day === 6;
+  const amount = isWeekend ? venue.weekendPricePerSlot : venue.pricePerSlot;
+  const { method, phone } = req.body || {};
+
+  const payment = {
+    id: db.nextId('payments'),
+    bookingId: booking.id,
+    matchId: null,
+    teamId: booking.teamId,
+    venueId: venue.id,
+    amount,
+    status: 'paid',
+    method: method || 'easypaisa',
+    phone: phone || null,
+    createdAt: Date.now(),
+    paidAt: Date.now(),
+  };
+  db.data.payments.push(payment);
+
+  booking.status = 'paid';
+  booking.expiresAt = Date.now() + INVITE_WINDOW_MINUTES * 60 * 1000;
+  db.persist();
+
+  const team = db.data.teams.find((t) => t.id === booking.teamId);
+  if (venue.ownerId) {
+    notify(venue.ownerId, 'payment_success', `💳 ${team?.name} paid PKR ${amount.toLocaleString()} for a slot at ${venue.name}.`);
+  }
+
+  res.status(201).json({ booking, payment });
+});
+
+
+// app.post('/api/bookings/:id/cancel', requireAuth, requireRole('team'), (req, res) => {
+//   const booking = db.data.bookings.find((b) => b.id === Number(req.params.id));
+//   if (!booking) return err(res, 404, 'Booking not found.');
+//   if (booking.teamId !== req.user.teamId) return err(res, 403, 'You cannot cancel a booking that is not yours.');
+//   booking.status = 'cancelled';
+//   db.persist();
+//   res.json(booking);
+// });
 app.post('/api/bookings/:id/cancel', requireAuth, requireRole('team'), (req, res) => {
   const booking = db.data.bookings.find((b) => b.id === Number(req.params.id));
   if (!booking) return err(res, 404, 'Booking not found.');
   if (booking.teamId !== req.user.teamId) return err(res, 403, 'You cannot cancel a booking that is not yours.');
   booking.status = 'cancelled';
+  const payment = db.data.payments.find((p) => p.bookingId === booking.id && p.status === 'paid');
+  if (payment) payment.status = 'refunded';
   db.persist();
   res.json(booking);
 });
+
+
 
 app.post('/api/bookings/:id/invite', requireAuth, requireRole('team'), (req, res) => {
   releaseExpiredBookings();
   const booking = db.data.bookings.find((b) => b.id === Number(req.params.id));
   if (!booking) return err(res, 404, 'Booking not found.');
   if (booking.teamId !== req.user.teamId) return err(res, 403, 'You cannot invite for a booking that is not yours.');
-  if (booking.status !== 'reserved') return err(res, 400, 'This booking is no longer available for invitations (it may have expired).');
+  // if (booking.status !== 'reserved') return err(res, 400, 'This booking is no longer available for invitations (it may have expired).');
+  if (booking.status !== 'paid') return err(res, 400, 'Please pay the ground fee before inviting an opponent.');
+
 
   const { opponentTeamId, message } = req.body || {};
   const opponent = getTeamOr404(res, opponentTeamId);
@@ -354,6 +411,52 @@ app.get('/api/invitations/mine', requireAuth, requireRole('team'), (req, res) =>
   res.json(mine);
 });
 
+// app.post('/api/invitations/:id/accept', requireAuth, requireRole('team'), (req, res) => {
+//   releaseExpiredBookings();
+//   const invitation = db.data.invitations.find((i) => i.id === Number(req.params.id));
+//   if (!invitation) return err(res, 404, 'Invitation not found.');
+//   if (invitation.toTeamId !== req.user.teamId) return err(res, 403, 'This invitation was not sent to your team.');
+//   if (invitation.status !== 'pending') return err(res, 400, 'This invitation has already been responded to.');
+
+//   const booking = db.data.bookings.find((b) => b.id === invitation.bookingId);
+//   if (!booking || booking.status !== 'invited') return err(res, 400, 'This booking is no longer available.');
+
+//   invitation.status = 'accepted';
+//   booking.status = 'accepted';
+//   booking.paymentExpiresAt = Date.now() + PAYMENT_WINDOW_MINUTES * 60 * 1000;
+
+//   const venue = db.data.venues.find((v) => v.id === booking.venueId);
+//   const match = {
+//     id: db.nextId('matches'),
+//     bookingId: booking.id,
+//     teamAId: booking.teamId,
+//     teamBId: booking.opponentTeamId,
+//     sportId: booking.sportId,
+//     venueId: booking.venueId,
+//     date: booking.date,
+//     time: booking.time,
+//     matchType: booking.matchType,
+//     status: 'awaiting_payment',
+//     result: null,
+//     createdAt: Date.now(),
+//   };
+//   db.data.matches.push(match);
+
+//   const payment = {
+//     id: db.nextId('payments'),
+//     matchId: match.id,
+//     teamId: booking.teamId,
+//     amount: venue.pricePerSlot,
+//     status: 'pending',
+//     method: null,
+//     createdAt: Date.now(),
+//   };
+//   db.data.payments.push(payment);
+//   db.persist();
+
+//   notify(booking.teamId, 'invitation_accepted', `🏆 Your match invitation has been accepted. Payment is required to confirm.`);
+//   res.json({ invitation, match, payment });
+// });
 app.post('/api/invitations/:id/accept', requireAuth, requireRole('team'), (req, res) => {
   releaseExpiredBookings();
   const invitation = db.data.invitations.find((i) => i.id === Number(req.params.id));
@@ -365,10 +468,8 @@ app.post('/api/invitations/:id/accept', requireAuth, requireRole('team'), (req, 
   if (!booking || booking.status !== 'invited') return err(res, 400, 'This booking is no longer available.');
 
   invitation.status = 'accepted';
-  booking.status = 'accepted';
-  booking.paymentExpiresAt = Date.now() + PAYMENT_WINDOW_MINUTES * 60 * 1000;
+  booking.status = 'confirmed';
 
-  const venue = db.data.venues.find((v) => v.id === booking.venueId);
   const match = {
     id: db.nextId('matches'),
     bookingId: booking.id,
@@ -379,27 +480,26 @@ app.post('/api/invitations/:id/accept', requireAuth, requireRole('team'), (req, 
     date: booking.date,
     time: booking.time,
     matchType: booking.matchType,
-    status: 'awaiting_payment',
+    status: 'confirmed',
     result: null,
     createdAt: Date.now(),
   };
   db.data.matches.push(match);
 
-  const payment = {
-    id: db.nextId('payments'),
-    matchId: match.id,
-    teamId: booking.teamId,
-    amount: venue.pricePerSlot,
-    status: 'pending',
-    method: null,
-    createdAt: Date.now(),
-  };
-  db.data.payments.push(payment);
+  // Link the pre-payment (settled when the slot was reserved) to this match.
+  const payment = db.data.payments.find((p) => p.bookingId === booking.id && p.status === 'paid');
+  if (payment) payment.matchId = match.id;
+
   db.persist();
 
-  notify(booking.teamId, 'invitation_accepted', `🏆 Your match invitation has been accepted. Payment is required to confirm.`);
-  res.json({ invitation, match, payment });
+  const teamA = db.data.teams.find((t) => t.id === booking.teamId);
+  const teamB = db.data.teams.find((t) => t.id === booking.opponentTeamId);
+  notify(booking.teamId, 'match_confirmed', `✅ ${teamB?.name} accepted your challenge. Match confirmed!`);
+  notify(booking.opponentTeamId, 'invitation_accepted', `🏆 Match confirmed — you're playing ${teamA?.name}.`);
+
+  res.json({ invitation, match });
 });
+
 
 app.post('/api/invitations/:id/reject', requireAuth, requireRole('team'), (req, res) => {
   const invitation = db.data.invitations.find((i) => i.id === Number(req.params.id));
@@ -409,8 +509,13 @@ app.post('/api/invitations/:id/reject', requireAuth, requireRole('team'), (req, 
 
   invitation.status = 'rejected';
   const booking = db.data.bookings.find((b) => b.id === invitation.bookingId);
-  if (booking) booking.status = 'cancelled';
-  db.persist();
+  // if (booking) booking.status = 'cancelled';
+  // db.persist();
+  if (booking) {
+    booking.status = 'cancelled';
+    const payment = db.data.payments.find((p) => p.bookingId === booking.id && p.status === 'paid');
+    if (payment) payment.status = 'refunded';
+  }
 
   const toTeam = db.data.teams.find((t) => t.id === req.user.teamId);
   notify(invitation.fromTeamId, 'invitation_rejected', `Your match invitation was declined by ${toTeam.name}. The slot has been released.`);
@@ -642,7 +747,8 @@ app.patch('/api/ground-owner/venues/:id', requireAuth, requireRole('ground_owner
   // Ground owners can tune their own operating parameters, but cannot
   // reassign ownership or rename/relocate the ground itself — that stays
   // with the Super Admin.
-  const editable = ['openingTime', 'closingTime', 'slotDurationMinutes', 'breakMinutes', 'pricePerSlot', 'weekendPricePerSlot', 'address', 'capacity', 'images', 'status'];
+  // const editable = ['openingTime', 'closingTime', 'slotDurationMinutes', 'breakMinutes', 'pricePerSlot', 'weekendPricePerSlot', 'address', 'capacity', 'images', 'status'];
+  const editable = ['openingTime', 'closingTime', 'slotDurationMinutes', 'breakMinutes', 'pricePerSlot', 'weekendPricePerSlot', 'address', 'capacity', 'images', 'status', 'easypaisaNumber', 'easypaisaName'];
   for (const key of editable) if (key in req.body) venue[key] = req.body[key];
   db.persist();
   res.json(venue);
