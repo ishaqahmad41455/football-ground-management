@@ -35,10 +35,14 @@ export default function PlayersPage() {
   const { push } = useToast();
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
-  const [squadLimit, setSquadLimit] = useState(11);
+  const [squadLimit, setSquadLimit] = useState(15);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: '', jerseyNumber: '', position: '', dob: '', phone: '' });
   const [submitting, setSubmitting] = useState(false);
+
+  const [editId, setEditId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState({ name: '', jerseyNumber: '', position: '', dob: '', phone: '' });
+  const [savingEdit, setSavingEdit] = useState(false);
 
   async function load() {
     if (!team) return;
@@ -84,6 +88,50 @@ export default function PlayersPage() {
       await load();
     } catch (e) {
       push('error', e instanceof ApiError ? e.message : 'Could not remove player.');
+    }
+  }
+
+  function startEdit(p: Player) {
+    setEditId(p.id);
+    setEditForm({
+      name: p.name,
+      jerseyNumber: String(p.jerseyNumber ?? ''),
+      position: p.position || '',
+      dob: p.dob || '',
+      phone: p.phone || '',
+    });
+  }
+
+  function cancelEdit() {
+    setEditId(null);
+    setEditForm({ name: '', jerseyNumber: '', position: '', dob: '', phone: '' });
+  }
+
+  async function saveEdit(id: number) {
+    if (!team) return;
+    if (!editForm.name.trim()) {
+      push('error', 'Player name is required.');
+      return;
+    }
+    setSavingEdit(true);
+    try {
+      await api(`/teams/${team.id}/players/${id}`, {
+        method: 'PUT',
+        body: {
+          name: editForm.name,
+          jerseyNumber: Number(editForm.jerseyNumber) || undefined,
+          position: editForm.position,
+          dob: editForm.dob,
+          phone: editForm.phone,
+        },
+      });
+      push('success', 'Player updated.');
+      cancelEdit();
+      await load();
+    } catch (e) {
+      push('error', e instanceof ApiError ? e.message : 'Could not update player.');
+    } finally {
+      setSavingEdit(false);
     }
   }
 
@@ -141,6 +189,7 @@ export default function PlayersPage() {
               </div>
             ))}
           </div>
+          <p className="text-xs text-mist-700 mt-3">Shows your first 9 players as starters; the rest are your bench.</p>
         </div>
       )}
 
@@ -160,11 +209,45 @@ export default function PlayersPage() {
                     <div className="text-xs text-mist-500 mt-1">
                       #{p.jerseyNumber} · {p.position || 'Unassigned'}
                     </div>
+                    {p.phone && <div className="text-xs text-mist-700 mt-1">{p.phone}</div>}
                   </div>
-                  <button onClick={() => removePlayer(p.id)} className="text-clay-400 text-xs hover:text-clay-300">
-                    Remove
-                  </button>
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    <button onClick={() => (editId === p.id ? cancelEdit() : startEdit(p))} className="text-blue-300 text-xs hover:text-blue-200">
+                      {editId === p.id ? 'Close' : 'Edit'}
+                    </button>
+                    <button onClick={() => removePlayer(p.id)} className="text-clay-400 text-xs hover:text-clay-300">
+                      Remove
+                    </button>
+                  </div>
                 </div>
+
+                {editId === p.id && (
+                  <div className="mt-4 pt-4 border-t border-white/10 grid gap-3">
+                    <Field label="Full Name">
+                      <input className={inputClass} value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
+                    </Field>
+                    <div className="grid grid-cols-2 gap-3">
+                      <Field label="Jersey #">
+                        <input type="number" className={inputClass} value={editForm.jerseyNumber} onChange={(e) => setEditForm({ ...editForm, jerseyNumber: e.target.value })} />
+                      </Field>
+                      <Field label="Position">
+                        <input className={inputClass} value={editForm.position} onChange={(e) => setEditForm({ ...editForm, position: e.target.value })} placeholder="GK / FWD" />
+                      </Field>
+                    </div>
+                    <Field label="Phone">
+                      <input className={inputClass} value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} />
+                    </Field>
+                    <Field label="Date of Birth">
+                      <input type="date" className={inputClass} value={editForm.dob} onChange={(e) => setEditForm({ ...editForm, dob: e.target.value })} />
+                    </Field>
+                    <div className="flex gap-3">
+                      <SecondaryButton onClick={cancelEdit}>Cancel</SecondaryButton>
+                      <PrimaryButton onClick={() => saveEdit(p.id)} disabled={savingEdit}>
+                        {savingEdit ? 'Saving…' : 'Save'}
+                      </PrimaryButton>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -836,6 +836,42 @@ app.patch('/api/admin/teams/:id/status', requireAuth, requireRole('admin'), (req
   res.json(team);
 });
 
+// Full team edit (name, sport/ground, city, captain info, etc.) — separate
+// from the status-only route above.
+app.patch('/api/admin/teams/:id', requireAuth, requireRole('admin'), (req, res) => {
+  const team = db.data.teams.find((t) => t.id === Number(req.params.id));
+  if (!team) return err(res, 404, 'Team not found.');
+
+  const body = req.body || {};
+
+  if (body.venueId !== undefined) {
+    const venue = db.data.venues.find((v) => v.id === Number(body.venueId));
+    if (!venue) return err(res, 400, 'Invalid ground.');
+    if (body.sportId === undefined && !venue.sportIds.includes(team.sportId)) {
+      return err(res, 400, 'The selected ground does not support this team\'s sport.');
+    }
+  }
+  if (body.sportId !== undefined && !db.data.sports.find((s) => s.id === Number(body.sportId))) {
+    return err(res, 400, 'Invalid sport.');
+  }
+
+  const editable = [
+    'name', 'city', 'area', 'homeGround', 'description',
+    'captainName', 'captainPhone', 'captainEmail', 'preferredFormat', 'verified',
+  ];
+  for (const key of editable) if (key in body) team[key] = body[key];
+  if ('sportId' in body) team.sportId = Number(body.sportId);
+  if ('venueId' in body) team.venueId = Number(body.venueId);
+
+  db.persist();
+  audit(req.user.email, 'team_edited', { teamId: team.id });
+  res.json({
+    ...team,
+    stats: computeTeamStats(team.id),
+    playerCount: db.data.players.filter((p) => p.teamId === team.id).length,
+  });
+});
+
 app.delete('/api/admin/teams/:id', requireAuth, requireRole('admin'), (req, res) => {
   const idx = db.data.teams.findIndex((t) => t.id === Number(req.params.id));
   if (idx === -1) return err(res, 404, 'Team not found.');
@@ -859,6 +895,26 @@ app.get('/api/admin/ground-owners', requireAuth, requireRole('admin'), (req, res
       venues: venuesOwnedBy(u.id).map((v) => ({ id: v.id, name: v.name, city: v.city })),
     }))
   );
+});
+
+// Edit a ground owner's name / email / (optionally) reset their password.
+app.patch('/api/admin/ground-owners/:id', requireAuth, requireRole('admin'), (req, res) => {
+  const owner = db.data.users.find((u) => u.id === Number(req.params.id) && u.role === 'ground_owner');
+  if (!owner) return err(res, 404, 'Ground owner not found.');
+
+  const { name, email, password } = req.body || {};
+  if (email && email.toLowerCase() !== owner.email.toLowerCase()) {
+    if (db.data.users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
+      return err(res, 409, 'An account with this email already exists.');
+    }
+    owner.email = email;
+  }
+  if (name) owner.name = name;
+  if (password) owner.passwordHash = hashPassword(password);
+
+  db.persist();
+  audit(req.user.email, 'ground_owner_edited', { ownerId: owner.id });
+  res.json({ id: owner.id, email: owner.email, name: owner.name, venues: venuesOwnedBy(owner.id) });
 });
 
 app.post('/api/admin/ground-owners', requireAuth, requireRole('admin'), (req, res) => {

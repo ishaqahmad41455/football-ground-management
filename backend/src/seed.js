@@ -21,8 +21,8 @@ function seed() {
   const nid = (t) => ++idc[t];
 
   // Sports
-  const futsal = { id: nid('sports'), key: 'futsal', name: 'Futsal', icon: '⚽', squadLimit: 11, startingPlayers: 5, matchDurationMinutes: 40, description: 'Fast-paced 5-a-side football on a compact court.' };
-  const cricket = { id: nid('sports'), key: 'cricket', name: 'Cricket', icon: '🏏', squadLimit: 11, startingPlayers: 11, matchDurationMinutes: 180, description: 'Classic 11-a-side limited-overs cricket.' };
+  const futsal = { id: nid('sports'), key: 'futsal', name: 'Futsal', icon: '⚽', squadLimit: 15, startingPlayers: 5, matchDurationMinutes: 40, description: 'Fast-paced 5-a-side football on a compact court.' };
+  const cricket = { id: nid('sports'), key: 'cricket', name: 'Cricket', icon: '🏏', squadLimit: 15, startingPlayers: 11, matchDurationMinutes: 180, description: 'Classic 11-a-side limited-overs cricket.' };
   data.sports.push(futsal, cricket);
 
   // Venues (grounds) — ownerId is filled in below once ground-owner accounts exist.

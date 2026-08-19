@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { api, ApiError } from '@/lib/api';
 import { useToast } from '@/lib/toast-context';
-import { Field, inputClass, PrimaryButton, Spinner, Badge, EmptyState } from '@/components/ui';
+import { Field, inputClass, PrimaryButton, Spinner, Badge, EmptyState, SecondaryButton } from '@/components/ui';
 
 interface Venue {
   id: number;
@@ -28,6 +28,10 @@ export default function AdminGroundOwnersPage() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: '', venueId: '' });
   const [reassign, setReassign] = useState<Record<number, string>>({});
+
+  const [editId, setEditId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState({ name: '', email: '', password: '' });
+  const [savingEdit, setSavingEdit] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -81,6 +85,32 @@ export default function AdminGroundOwnersPage() {
       await load();
     } catch (e) {
       push('error', e instanceof ApiError ? e.message : 'Could not unassign ground.');
+    }
+  }
+
+  function startEdit(o: Owner) {
+    setEditId(o.id);
+    setEditForm({ name: o.name, email: o.email, password: '' });
+  }
+
+  function cancelEdit() {
+    setEditId(null);
+    setEditForm({ name: '', email: '', password: '' });
+  }
+
+  async function saveEdit(id: number) {
+    setSavingEdit(true);
+    try {
+      const body: any = { name: editForm.name, email: editForm.email };
+      if (editForm.password) body.password = editForm.password;
+      await api(`/admin/ground-owners/${id}`, { method: 'PATCH', body });
+      push('success', 'Ground owner updated.');
+      cancelEdit();
+      await load();
+    } catch (e) {
+      push('error', e instanceof ApiError ? e.message : 'Could not save changes.');
+    } finally {
+      setSavingEdit(false);
     }
   }
 
@@ -143,10 +173,35 @@ export default function AdminGroundOwnersPage() {
                     <div className="font-medium">{o.name}</div>
                     <div className="text-xs text-mist-500">{o.email}</div>
                   </div>
-                  <Badge tone={o.venues.length > 0 ? 'success' : 'warning'}>
-                    {o.venues.length} ground{o.venues.length === 1 ? '' : 's'}
-                  </Badge>
+                  <div className="flex items-center gap-3">
+                    <Badge tone={o.venues.length > 0 ? 'success' : 'warning'}>
+                      {o.venues.length} ground{o.venues.length === 1 ? '' : 's'}
+                    </Badge>
+                    <button onClick={() => (editId === o.id ? cancelEdit() : startEdit(o))} className="text-blue-300 text-xs hover:text-blue-200">
+                      {editId === o.id ? 'Close' : 'Edit'}
+                    </button>
+                  </div>
                 </div>
+
+                {editId === o.id && (
+                  <div className="mt-4 pt-4 border-t border-white/10 grid sm:grid-cols-3 gap-3 items-end">
+                    <Field label="Full Name">
+                      <input className={inputClass} value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
+                    </Field>
+                    <Field label="Email">
+                      <input type="email" className={inputClass} value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} />
+                    </Field>
+                    <Field label="New Password (optional)">
+                      <input type="text" className={inputClass} placeholder="Leave blank to keep current" value={editForm.password} onChange={(e) => setEditForm({ ...editForm, password: e.target.value })} />
+                    </Field>
+                    <div className="sm:col-span-3 flex gap-3">
+                      <SecondaryButton onClick={cancelEdit}>Cancel</SecondaryButton>
+                      <PrimaryButton onClick={() => saveEdit(o.id)} disabled={savingEdit}>
+                        {savingEdit ? 'Saving…' : 'Save Changes'}
+                      </PrimaryButton>
+                    </div>
+                  </div>
+                )}
 
                 <div className="mt-3 flex flex-wrap gap-2">
                   {o.venues.map((v) => (

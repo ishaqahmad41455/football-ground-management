@@ -731,30 +731,6 @@
       "isCaptain": true
     },
     {
-      "id": 2,
-      "teamId": 1,
-      "name": "Player 2 (Thunder FC)",
-      "photo": null,
-      "jerseyNumber": 2,
-      "position": "DEF",
-      "dob": "1998-03-12",
-      "phone": "031100000102",
-      "status": "active",
-      "isCaptain": false
-    },
-    {
-      "id": 3,
-      "teamId": 1,
-      "name": "Player 3 (Thunder FC)",
-      "photo": null,
-      "jerseyNumber": 3,
-      "position": "DEF",
-      "dob": "1998-04-13",
-      "phone": "031100000103",
-      "status": "active",
-      "isCaptain": false
-    },
-    {
       "id": 4,
       "teamId": 1,
       "name": "Player 4 (Thunder FC)",
@@ -4079,7 +4055,7 @@
       "teamId": 1,
       "type": "invitation",
       "message": "⚽ Blaze FC has challenged your team.",
-      "read": false,
+      "read": true,
       "createdAt": 1786777608643
     },
     {
@@ -4128,6 +4104,24 @@
         "role": "admin"
       },
       "createdAt": 1787046364529
+    },
+    {
+      "id": 5,
+      "user": "admin@sportshub.com",
+      "action": "login",
+      "meta": {
+        "role": "admin"
+      },
+      "createdAt": 1787129067547
+    },
+    {
+      "id": 6,
+      "user": "demo@team.com",
+      "action": "login",
+      "meta": {
+        "role": "team"
+      },
+      "createdAt": 1787129174172
     }
   ],
   "seq": {
@@ -4142,6 +4136,6 @@
     "payments": 15,
     "notifications": 2,
     "ratings": 0,
-    "auditLogs": 4
+    "auditLogs": 6
   }
 }
