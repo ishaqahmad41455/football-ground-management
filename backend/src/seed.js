@@ -1,4 +1,6 @@
+require('dotenv').config();
 const db = require('./db');
+// const { hashPassword } = require('./auth');
 const { hashPassword } = require('./auth');
 
 function seed() {
@@ -20,6 +22,13 @@ function seed() {
   let idc = { sports: 0, venues: 0, teams: 0, players: 0, users: 0, bookings: 0, matches: 0, invitations: 0, payments: 0, notifications: 0, ratings: 0, auditLogs: 0 };
   const nid = (t) => ++idc[t];
 
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@sportshub.com';
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin@123';
+  const GROUND_OWNER_EMAIL = process.env.GROUND_OWNER_EMAIL || 'owner@ground.com';
+  const GROUND_OWNER_PASSWORD = process.env.GROUND_OWNER_PASSWORD || 'Owner@123';
+  const DEMO_TEAM_EMAIL = process.env.DEMO_TEAM_EMAIL || 'demo@team.com';
+  const DEMO_TEAM_PASSWORD = process.env.DEMO_TEAM_PASSWORD || 'Demo@123';
+
   // Sports
   const futsal = { id: nid('sports'), key: 'futsal', name: 'Futsal', icon: '⚽', squadLimit: 15, startingPlayers: 5, matchDurationMinutes: 40, description: 'Fast-paced 5-a-side football on a compact court.' };
   const cricket = { id: nid('sports'), key: 'cricket', name: 'Cricket', icon: '🏏', squadLimit: 15, startingPlayers: 11, matchDurationMinutes: 180, description: 'Classic 11-a-side limited-overs cricket.' };
@@ -35,8 +44,17 @@ function seed() {
   for (const v of venueSeeds) data.venues.push({ id: nid('venues'), status: 'active', ownerId: null, ...v });
 
   // Super Admin user (role stays "admin" internally; UI labels it "Super Admin").
-  data.users.push({ id: nid('users'), email: 'admin@sportshub.com', passwordHash: hashPassword('Admin@123'), role: 'admin', teamId: null, name: 'Platform Admin', createdAt: Date.now() });
+  // data.users.push({ id: nid('users'), email: 'admin@sportshub.com', passwordHash: hashPassword('Admin@123'), role: 'admin', teamId: null, name: 'Platform Admin', createdAt: Date.now() });
 
+  data.users.push({
+    id: nid('users'),
+    email: ADMIN_EMAIL,
+    passwordHash: hashPassword(ADMIN_PASSWORD),
+    role: 'admin',
+    teamId: null,
+    name: 'Platform Admin',
+    createdAt: Date.now(),
+  });
   // Ground Owner accounts — one per venue, so every ground has an operator.
   const groundOwners = data.venues.map((venue) => {
     const owner = {
@@ -53,10 +71,25 @@ function seed() {
     return owner;
   });
 
+  // const groundOwners = data.venues.map((venue) => {
+  //   const owner = {
+  //     id: nid('users'),
+  //     email: `owner${venue.id}@sportshub.com`,
+  //     passwordHash: hashPassword('Owner@123'),
+  //     role: 'ground_owner',
+  //     teamId: null,
+  //     name: `${venue.name} Manager`,
+  //     createdAt: Date.now(),
+  //   };
+  //   data.users.push(owner);
+  //   venue.ownerId = owner.id;
+  //   return owner;
+  // });
+
   // Predictable demo ground-owner login (manages Thunder Arena, venue[0]).
   const demoOwner = groundOwners[0];
-  demoOwner.email = 'owner@ground.com';
-  demoOwner.passwordHash = hashPassword('Owner@123');
+  demoOwner.email = GROUND_OWNER_EMAIL;
+  demoOwner.passwordHash = hashPassword(GROUND_OWNER_PASSWORD);
   demoOwner.name = 'Demo Ground Owner';
 
   const futsalNames = ['Thunder FC', 'Warriors United', 'Falcon Futsal', 'Titans Arena', 'Blaze FC', 'Rangers Court', 'Storm Kickers', 'Nova United', 'Apex Futsal', 'Rapid Strikers'];
@@ -120,8 +153,8 @@ function seed() {
   // Demo team account (predictable login for reviewers)
   const demoTeam = futsalTeams[0];
   const demoUser = data.users.find((u) => u.teamId === demoTeam.id);
-  demoUser.email = 'demo@team.com';
-  demoUser.passwordHash = hashPassword('Demo@123');
+  demoUser.email = DEMO_TEAM_EMAIL;
+  demoUser.passwordHash = hashPassword(DEMO_TEAM_PASSWORD);
 
   // Completed matches with results (to populate rankings/history)
   function randScore(sportKey) {
@@ -221,16 +254,29 @@ function seed() {
   data.users.push({ id: nid('users'), email: 'newcomers@example.com', passwordHash: hashPassword('Team@123'), role: 'team', teamId: pendingTeam.id, name: pendingTeam.captainName, createdAt: Date.now() });
   data.notifications.push({ id: nid('notifications'), ownerId: demoOwner.id, type: 'team_registered', message: `${pendingTeam.name} registered under ${data.venues[0].name} and is awaiting your approval.`, read: false, createdAt: Date.now() });
 
+
   data.seq = idc;
   db.reset(data);
   console.log('Seed complete.');
-  console.log('Super Admin login   -> email: admin@sportshub.com / password: Admin@123');
-  console.log('Ground Owner login  -> email: owner@ground.com / password: Owner@123 (manages: ' + data.venues[0].name + ')');
-  console.log('Demo team login     -> email: demo@team.com / password: Demo@123 (team: ' + demoTeam.name + ')');
+  console.log(`Super Admin login   -> email: ${ADMIN_EMAIL} / password: ${ADMIN_PASSWORD}`);
+  console.log(`Ground Owner login  -> email: ${GROUND_OWNER_EMAIL} / password: ${GROUND_OWNER_PASSWORD} (manages: ${data.venues[0].name})`);
+  console.log(`Demo team login     -> email: ${DEMO_TEAM_EMAIL} / password: ${DEMO_TEAM_PASSWORD} (team: ${demoTeam.name})`);
 }
 
 if (require.main === module) {
   seed();
 }
+//   data.seq = idc;
+//   db.reset(data);
+//   console.log('Seed complete.');
+//   // console.log('Super Admin login   -> email: admin@sportshub.com / password: Admin@123');
+//   onsole.log(`Super Admin login   -> email: ${ADMIN_EMAIL} / password: ${ADMIN_PASSWORD}`);
+//   console.log('Ground Owner login  -> email: owner@ground.com / password: Owner@123 (manages: ' + data.venues[0].name + ')');
+//   console.log('Demo team login     -> email: demo@team.com / password: Demo@123 (team: ' + demoTeam.name + ')');
+// }
+
+// if (require.main === module) {
+//   seed();
+// }
 
 module.exports = seed;

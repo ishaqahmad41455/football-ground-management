@@ -12,8 +12,10 @@ export default function LoginPage() {
   const { login } = useAuth();
   const { push } = useToast();
   const router = useRouter();
-  const [email, setEmail] = useState('demo@team.com');
-  const [password, setPassword] = useState('Demo@123');
+  // const [email, setEmail] = useState('demo@team.com');
+  // const [password, setPassword] = useState('Demo@123');
+  const [email, setEmail] = useState(process.env.NEXT_PUBLIC_DEMO_TEAM_EMAIL || '');
+  const [password, setPassword] = useState(process.env.NEXT_PUBLIC_DEMO_TEAM_PASSWORD || '');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 

@@ -12,8 +12,10 @@ export default function GroundOwnerLoginPage() {
   const { login } = useAuth();
   const { push } = useToast();
   const router = useRouter();
-  const [email, setEmail] = useState('owner@ground.com');
-  const [password, setPassword] = useState('Owner@123');
+  // const [email, setEmail] = useState('owner@ground.com');
+  // const [password, setPassword] = useState('Owner@123');
+  const [email, setEmail] = useState(process.env.NEXT_PUBLIC_GROUND_OWNER_EMAIL || '');
+  const [password, setPassword] = useState(process.env.NEXT_PUBLIC_GROUND_OWNER_PASSWORD || '');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
